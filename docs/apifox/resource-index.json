@@ -1,0 +1,235 @@
+{
+  "project_id": 8800905,
+  "branch": "main",
+  "cli_version": "2.2.9",
+  "verified_date": "2026-09-05",
+  "cases": [
+    {
+      "case_key": "API-01",
+      "case_id": 411147565,
+      "endpoint_id": 511260338,
+      "name": "API-01 存活与版本",
+      "assertions": 3,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "not_run_backend_not_built"
+    },
+    {
+      "case_key": "API-02",
+      "case_id": 411147574,
+      "endpoint_id": 511261550,
+      "name": "API-02 演示任务列表",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "not_run_backend_not_built"
+    },
+    {
+      "case_key": "API-03",
+      "case_id": 411147575,
+      "endpoint_id": 511261551,
+      "name": "API-03 任务不存在",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "not_run_backend_not_built"
+    },
+    {
+      "case_key": "API-04",
+      "case_id": 411147576,
+      "endpoint_id": 511261552,
+      "name": "API-04 六种策略",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "not_run_backend_not_built"
+    },
+    {
+      "case_key": "API-05",
+      "case_id": 411147578,
+      "endpoint_id": 511261553,
+      "name": "API-05 创建合法诊断运行",
+      "assertions": 3,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "not_run_backend_not_built"
+    },
+    {
+      "case_key": "API-06",
+      "case_id": 411147579,
+      "endpoint_id": 511261553,
+      "name": "API-06 缺少incident_id",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "not_run_backend_not_built"
+    },
+    {
+      "case_key": "API-07",
+      "case_id": 411147580,
+      "endpoint_id": 511261553,
+      "name": "API-07 探测次数超上限",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "not_run_backend_not_built"
+    },
+    {
+      "case_key": "API-08",
+      "case_id": 411147581,
+      "endpoint_id": 511261553,
+      "name": "API-08 非法策略",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "not_run_backend_not_built"
+    },
+    {
+      "case_key": "API-09",
+      "case_id": 411147583,
+      "endpoint_id": 511261554,
+      "name": "API-09 运行列表分页",
+      "assertions": 3,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "not_run_backend_not_built"
+    },
+    {
+      "case_key": "API-10",
+      "case_id": 411147584,
+      "endpoint_id": 511261555,
+      "name": "API-10 运行不存在",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "not_run_backend_not_built"
+    },
+    {
+      "case_key": "API-11",
+      "case_id": 411147585,
+      "endpoint_id": 511261556,
+      "name": "API-11 取消不存在运行",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "not_run_backend_not_built"
+    },
+    {
+      "case_key": "API-12",
+      "case_id": 411147586,
+      "endpoint_id": 511261557,
+      "name": "API-12 非法事件游标",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "not_run_backend_not_built"
+    },
+    {
+      "case_key": "API-13",
+      "case_id": 411147587,
+      "endpoint_id": 511261558,
+      "name": "API-13 证据运行不存在",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "not_run_backend_not_built"
+    },
+    {
+      "case_key": "API-14",
+      "case_id": 411147588,
+      "endpoint_id": 511261559,
+      "name": "API-14 报告运行不存在",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "not_run_backend_not_built"
+    },
+    {
+      "case_key": "API-15",
+      "case_id": 411147589,
+      "endpoint_id": 511261549,
+      "name": "API-15 项目预算边界",
+      "assertions": 4,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "not_run_backend_not_built"
+    }
+  ],
+  "contract_source": "docs/api/openapi.json",
+  "contract_commit": "4a302a68f621f0a29b06c05e0f7dc749fe9409ee",
+  "backend_tests_executed": false,
+  "endpoints": [
+    {
+      "endpoint_id": 511260338,
+      "method": "get",
+      "path": "/healthz",
+      "operation_id": "health"
+    },
+    {
+      "endpoint_id": 511261549,
+      "method": "get",
+      "path": "/api/v1/budget",
+      "operation_id": "getBudget"
+    },
+    {
+      "endpoint_id": 511261550,
+      "method": "get",
+      "path": "/api/v1/incidents",
+      "operation_id": "listIncidents"
+    },
+    {
+      "endpoint_id": 511261552,
+      "method": "get",
+      "path": "/api/v1/strategies",
+      "operation_id": "listStrategies"
+    },
+    {
+      "endpoint_id": 511261557,
+      "method": "get",
+      "path": "/api/v1/runs/{run_id}/events",
+      "operation_id": "listEvents"
+    },
+    {
+      "endpoint_id": 511261551,
+      "method": "get",
+      "path": "/api/v1/incidents/{incident_id}",
+      "operation_id": "getIncident"
+    },
+    {
+      "endpoint_id": 511261553,
+      "method": "post",
+      "path": "/api/v1/runs",
+      "operation_id": "createRun"
+    },
+    {
+      "endpoint_id": 511261558,
+      "method": "get",
+      "path": "/api/v1/runs/{run_id}/evidence",
+      "operation_id": "listEvidences"
+    },
+    {
+      "endpoint_id": 511261554,
+      "method": "get",
+      "path": "/api/v1/runs",
+      "operation_id": "listRuns"
+    },
+    {
+      "endpoint_id": 511261559,
+      "method": "get",
+      "path": "/api/v1/runs/{run_id}/report",
+      "operation_id": "getReport"
+    },
+    {
+      "endpoint_id": 511261555,
+      "method": "get",
+      "path": "/api/v1/runs/{run_id}",
+      "operation_id": "getRun"
+    },
+    {
+      "endpoint_id": 511261556,
+      "method": "post",
+      "path": "/api/v1/runs/{run_id}/cancel",
+      "operation_id": "cancelRun"
+    }
+  ]
+}

@@ -75,7 +75,8 @@
               }
             }
           }
-        }
+        },
+        "x-apifox-status": "developing"
       }
     },
     "/api/v1/incidents": {
@@ -123,7 +124,8 @@
               }
             }
           }
-        }
+        },
+        "x-apifox-status": "developing"
       }
     },
     "/api/v1/incidents/{incident_id}": {
@@ -218,7 +220,8 @@
               "pattern": "^[A-Za-z0-9_-]{1,64}$"
             }
           }
-        ]
+        ],
+        "x-apifox-status": "developing"
       }
     },
     "/api/v1/strategies": {
@@ -266,7 +269,8 @@
               }
             }
           }
-        }
+        },
+        "x-apifox-status": "developing"
       }
     },
     "/api/v1/runs": {
@@ -436,7 +440,8 @@
               }
             }
           }
-        }
+        },
+        "x-apifox-status": "developing"
       },
       "get": {
         "operationId": "listRuns",
@@ -522,7 +527,8 @@
               "default": 20
             }
           }
-        ]
+        ],
+        "x-apifox-status": "developing"
       }
     },
     "/api/v1/runs/{run_id}": {
@@ -617,7 +623,8 @@
               "pattern": "^[A-Za-z0-9_-]{1,64}$"
             }
           }
-        ]
+        ],
+        "x-apifox-status": "developing"
       }
     },
     "/api/v1/runs/{run_id}/cancel": {
@@ -725,7 +732,8 @@
               }
             }
           }
-        }
+        },
+        "x-apifox-status": "developing"
       }
     },
     "/api/v1/runs/{run_id}/events": {
@@ -841,7 +849,8 @@
               "default": 50
             }
           }
-        ]
+        ],
+        "x-apifox-status": "developing"
       }
     },
     "/api/v1/runs/{run_id}/evidence": {
@@ -957,7 +966,8 @@
               "default": 50
             }
           }
-        ]
+        ],
+        "x-apifox-status": "developing"
       }
     },
     "/api/v1/runs/{run_id}/report": {
@@ -1070,7 +1080,8 @@
               "pattern": "^[A-Za-z0-9_-]{1,64}$"
             }
           }
-        ]
+        ],
+        "x-apifox-status": "developing"
       }
     },
     "/api/v1/budget": {
@@ -1118,7 +1129,8 @@
               }
             }
           }
-        }
+        },
+        "x-apifox-status": "developing"
       }
     }
   },

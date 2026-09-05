@@ -3,7 +3,7 @@
 ## 当前状态
 
 - 选题：用户于2026-09-05明确选择T1“基于竞争假设与探测成本的故障诊断 Agent”。
-- 当前：第4步/P0整体规划与文档完善，用户已授权；P1真正搭建尚未开始。
+- 当前：第4步/P0规划、文档和Apifox设计资产已交付，等待验收；P1真正搭建尚未开始。
 - 用户确定：React方向前端、FastAPI后端、纯Python Agent不使用框架、完整logging/tracing、Apifox CLI维护接口和测试、百炼API（变量BAILIAN_API）。
 - 规划具体化：React/TypeScript/Vite、独立worker、SQLite、OTel、四工具快照诊断，见[架构](architecture.md)。
 - 约束：150–300小时，总API≤500元；计划目标280小时、预算包络383.712元，详见[实施计划](implementation-plan.md)与[实验预算](evaluation-plan.md)。
@@ -55,7 +55,7 @@
 
 Apifox现有项目8800905为Git Spec模式，连接当前GitHub仓库；契约通过Git同步生成，测试资源通过CLI维护。导入、同步、回读及执行边界见[Apifox记录](apifox/README.md)。本轮仅核查BAILIAN_API存在且非空，不输出、不消费、不改写.env。
 
-验收：文档/链接与阶段一致，OpenAPI结构和引用有效，Apifox目标项目资源可核查，Git差异与凭据检查通过；业务运行测试明确留到应用搭建。交付后停止，等待用户批准P1。
+验证：OpenAPI标准校验通过，11路径/12操作/19模型；Apifox同步12接口，15用例schema/逐项回读通过；导出与本地契约结构相符，本地链接、工时/预算计算、Git差异与凭据检查通过。详情见[验证记录](planning-validation.md)。业务运行测试未执行，留到应用搭建。交付后停止，等待用户批准P1。
 
 ## 批准记录
 

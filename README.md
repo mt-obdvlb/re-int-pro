@@ -1,6 +1,6 @@
 # re-int-pro
 
-用于计算机考研与复旦复试面试准备的 Agent 项目。用户已选择 **T1：基于竞争假设与探测成本的故障诊断 Agent（ProbeOps）**，当前进行整体规划和文档完善；应用尚未搭建。
+用于计算机考研与复旦复试面试准备的 Agent 项目。用户已选择 **T1：基于竞争假设与探测成本的故障诊断 Agent（ProbeOps）**，已完成整体规划、文档及 Apifox 设计资产；应用尚未搭建，等待本轮验收。
 
 ## 项目目标
 
@@ -39,6 +39,7 @@ React + TypeScript + Vite 前端；Python FastAPI 后端；Agent 由纯 Python �
 - [测试设计](docs/testing.md)：24 项 API 测试矩阵、内部测试和验收分工。
 - [实验与预算](docs/evaluation-plan.md)：80 个计划任务、六配置、统计和百炼费用。
 - [开发约定](docs/development.md)：环境、安全配置和后续搭建要求。
+- [规划来源](docs/planning-sources.md) / [本轮验证记录](docs/planning-validation.md)：官方依据、验证证据与未执行边界。
 
 ## 历史选题材料与阶段记录
 
