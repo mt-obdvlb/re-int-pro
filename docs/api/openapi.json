@@ -1,0 +1,1916 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ProbeOps 诊断 Agent API",
+    "version": "0.1.0",
+    "description": "T1 设计契约。仅本机演示，Agent 无写入或注入故障工具；实验控制器单独运行。Apifox project=8800905，main，Git Spec 模式，以本文件为契约源。"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "未来本地开发后端（当前未搭建）"
+    }
+  ],
+  "tags": [
+    {
+      "name": "系统"
+    },
+    {
+      "name": "故障任务"
+    },
+    {
+      "name": "诊断运行"
+    },
+    {
+      "name": "证据与报告"
+    }
+  ],
+  "paths": {
+    "/healthz": {
+      "get": {
+        "operationId": "health",
+        "tags": [
+          "系统"
+        ],
+        "summary": "进程存活检查",
+        "description": "规划契约；后端尚未实现。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                },
+                "example": {
+                  "status": "ok",
+                  "version": "0.1.0"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "未预期内部错误；不回显堆栈",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/incidents": {
+      "get": {
+        "operationId": "listIncidents",
+        "tags": [
+          "故障任务"
+        ],
+        "summary": "列出公开演示任务",
+        "description": "规划契约；后端尚未实现。 仅访问脱敏观测，不暴露故障注入真值。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentList"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "未预期内部错误；不回显堆栈",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/incidents/{incident_id}": {
+      "get": {
+        "operationId": "getIncident",
+        "tags": [
+          "故障任务"
+        ],
+        "summary": "读取脱敏告警与时间窗口",
+        "description": "规划契约；后端尚未实现。 仅访问脱敏观测，不暴露故障注入真值。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Incident"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "422": {
+            "description": "请求校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "500": {
+            "description": "未预期内部错误；不回显堆栈",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "incident_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/strategies": {
+      "get": {
+        "operationId": "listStrategies",
+        "tags": [
+          "诊断运行"
+        ],
+        "summary": "列出六种诊断策略",
+        "description": "规划契约；后端尚未实现。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StrategyList"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "未预期内部错误；不回显堆栈",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs": {
+      "post": {
+        "operationId": "createRun",
+        "tags": [
+          "诊断运行"
+        ],
+        "summary": "创建受预算约束的诊断运行",
+        "description": "规划契约；后端尚未实现。",
+        "responses": {
+          "202": {
+            "description": "成功",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "429": {
+            "description": "准入预算或并发额度不足",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "409": {
+            "description": "状态冲突或幂等键正文不同",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "422": {
+            "description": "请求校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "503": {
+            "description": "必要依赖未就绪",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "500": {
+            "description": "未预期内部错误；不回显堆栈",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 64
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRun"
+              },
+              "example": {
+                "incident_id": "demo_001",
+                "strategy_id": "competitive_cost",
+                "limits": {
+                  "max_steps": 12,
+                  "max_llm_calls": 16,
+                  "max_wall_seconds": 180,
+                  "max_cost_micro_cny": 250000
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "listRuns",
+        "tags": [
+          "诊断运行"
+        ],
+        "summary": "运行列表",
+        "description": "规划契约；后端尚未实现。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "请求校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "500": {
+            "description": "未预期内部错误；不回显堆栈",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/runs/{run_id}": {
+      "get": {
+        "operationId": "getRun",
+        "tags": [
+          "诊断运行"
+        ],
+        "summary": "状态与竞争假设快照",
+        "description": "规划契约；后端尚未实现。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "422": {
+            "description": "请求校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "500": {
+            "description": "未预期内部错误；不回显堆栈",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/runs/{run_id}/cancel": {
+      "post": {
+        "operationId": "cancelRun",
+        "tags": [
+          "诊断运行"
+        ],
+        "summary": "请求取消运行",
+        "description": "规划契约；后端尚未实现。",
+        "responses": {
+          "202": {
+            "description": "成功",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "422": {
+            "description": "请求校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "500": {
+            "description": "未预期内部错误；不回显堆栈",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelRun"
+              },
+              "example": {
+                "reason": "用户取消演示"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/events": {
+      "get": {
+        "operationId": "listEvents",
+        "tags": [
+          "证据与报告"
+        ],
+        "summary": "增量读取事件",
+        "description": "规划契约；后端尚未实现。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventPage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "422": {
+            "description": "请求校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "500": {
+            "description": "未预期内部错误；不回显堆栈",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            }
+          },
+          {
+            "name": "after_seq",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/runs/{run_id}/evidence": {
+      "get": {
+        "operationId": "listEvidences",
+        "tags": [
+          "证据与报告"
+        ],
+        "summary": "增量读取证据",
+        "description": "规划契约；后端尚未实现。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidencePage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "422": {
+            "description": "请求校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "500": {
+            "description": "未预期内部错误；不回显堆栈",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            }
+          },
+          {
+            "name": "after_seq",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/runs/{run_id}/report": {
+      "get": {
+        "operationId": "getReport",
+        "tags": [
+          "证据与报告"
+        ],
+        "summary": "读取完成运行的诊断报告",
+        "description": "规划契约；后端尚未实现。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Report"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "状态冲突或幂等键正文不同",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "422": {
+            "description": "请求校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          },
+          "500": {
+            "description": "未预期内部错误；不回显堆栈",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/budget": {
+      "get": {
+        "operationId": "getBudget",
+        "tags": [
+          "系统"
+        ],
+        "summary": "读取项目预算账本",
+        "description": "规划契约；后端尚未实现。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Budget"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "未预期内部错误；不回显堆栈",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "请求关联标识"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "request_id",
+          "retryable"
+        ]
+      },
+      "Health": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "version"
+        ]
+      },
+      "Incident": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "incident_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          },
+          "title": {
+            "type": "string"
+          },
+          "alert": {
+            "type": "string"
+          },
+          "service": {
+            "type": "string"
+          },
+          "window_start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "window_end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dataset_version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "incident_id",
+          "title",
+          "alert",
+          "service",
+          "window_start",
+          "window_end",
+          "dataset_version"
+        ]
+      },
+      "Strategy": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "strategy_id": {
+            "type": "string",
+            "enum": [
+              "fixed",
+              "react",
+              "graph_greedy",
+              "competitive_cost",
+              "no_cost",
+              "random_probe"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "strategy_id",
+          "name",
+          "description"
+        ]
+      },
+      "Limits": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "max_steps": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "max_llm_calls": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 16
+          },
+          "max_wall_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 180
+          },
+          "max_cost_micro_cny": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 250000
+          }
+        },
+        "required": [
+          "max_steps",
+          "max_llm_calls",
+          "max_wall_seconds",
+          "max_cost_micro_cny"
+        ]
+      },
+      "CreateRun": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "incident_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          },
+          "strategy_id": {
+            "type": "string",
+            "enum": [
+              "fixed",
+              "react",
+              "graph_greedy",
+              "competitive_cost",
+              "no_cost",
+              "random_probe"
+            ]
+          },
+          "limits": {
+            "$ref": "#/components/schemas/Limits"
+          }
+        },
+        "required": [
+          "incident_id",
+          "strategy_id",
+          "limits"
+        ]
+      },
+      "Usage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "llm_calls": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "probe_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "input_tokens": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "output_tokens": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "settled_micro_cny": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reserved_micro_cny": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "uncertain_micro_cny": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "probe_cost_units": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "llm_calls",
+          "probe_count",
+          "input_tokens",
+          "output_tokens",
+          "settled_micro_cny",
+          "reserved_micro_cny",
+          "uncertain_micro_cny",
+          "probe_cost_units"
+        ]
+      },
+      "Hypothesis": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "hypothesis_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          },
+          "component": {
+            "type": "string"
+          },
+          "fault_type": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "supported",
+              "contradicted",
+              "unresolved"
+            ]
+          },
+          "score": {
+            "type": "integer",
+            "minimum": -20,
+            "maximum": 20
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            }
+          },
+          "predictions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "tool_name",
+                "observation",
+                "expected"
+              ],
+              "properties": {
+                "tool_name": {
+                  "type": "string"
+                },
+                "observation": {
+                  "type": "string"
+                },
+                "expected": {
+                  "type": "string",
+                  "enum": [
+                    "high",
+                    "normal",
+                    "low",
+                    "unknown"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "hypothesis_id",
+          "component",
+          "fault_type",
+          "status",
+          "score",
+          "evidence_ids",
+          "predictions"
+        ]
+      },
+      "Run": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          },
+          "incident_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          },
+          "strategy_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "cancel_requested",
+              "completed",
+              "cancelled",
+              "failed"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "trace_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{32}$"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/Limits"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/Usage"
+          },
+          "hypotheses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Hypothesis"
+            }
+          },
+          "last_event_seq": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "stop_reason": {
+            "type": "string",
+            "enum": [
+              "none",
+              "evidence_sufficient",
+              "ambiguous",
+              "step_limit",
+              "cost_limit",
+              "deadline",
+              "cancelled",
+              "dependency_error",
+              "worker_lost"
+            ]
+          },
+          "model": {
+            "type": "string"
+          },
+          "config_hash": {
+            "type": "string"
+          },
+          "dataset_version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "incident_id",
+          "strategy_id",
+          "status",
+          "created_at",
+          "updated_at",
+          "version",
+          "trace_id",
+          "limits",
+          "usage",
+          "hypotheses",
+          "last_event_seq",
+          "stop_reason",
+          "model",
+          "config_hash",
+          "dataset_version"
+        ]
+      },
+      "CancelRun": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "Event": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "run_created",
+              "run_started",
+              "hypotheses_updated",
+              "probe_started",
+              "probe_finished",
+              "llm_finished",
+              "cancel_requested",
+              "run_finished",
+              "warning"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            }
+          },
+          "hypothesis_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            }
+          },
+          "span_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{16}$"
+          },
+          "decision": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "probe_id",
+              "disagreement_pairs",
+              "estimated_cost_units",
+              "utility",
+              "reason"
+            ],
+            "properties": {
+              "probe_id": {
+                "type": "string"
+              },
+              "disagreement_pairs": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 6
+              },
+              "estimated_cost_units": {
+                "type": "number",
+                "minimum": 0
+              },
+              "utility": {
+                "type": "number",
+                "minimum": 0
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 2000
+              }
+            }
+          }
+        },
+        "required": [
+          "seq",
+          "timestamp",
+          "kind",
+          "message",
+          "evidence_ids",
+          "hypothesis_ids",
+          "span_id"
+        ]
+      },
+      "Evidence": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "evidence_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          },
+          "probe_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          },
+          "tool_name": {
+            "type": "string",
+            "enum": [
+              "query_metrics",
+              "query_logs",
+              "get_trace",
+              "read_config"
+            ]
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "window_start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "window_end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "content_hash": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "empty",
+              "timeout",
+              "error",
+              "truncated"
+            ]
+          },
+          "source": {
+            "type": "string"
+          },
+          "span_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{16}$"
+          },
+          "seq": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "evidence_id",
+          "probe_id",
+          "tool_name",
+          "observed_at",
+          "window_start",
+          "window_end",
+          "summary",
+          "content_hash",
+          "outcome",
+          "source",
+          "span_id",
+          "seq"
+        ]
+      },
+      "Report": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          },
+          "conclusion": {
+            "type": "string",
+            "enum": [
+              "located",
+              "unresolved"
+            ]
+          },
+          "component": {
+            "type": "string"
+          },
+          "fault_type": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            }
+          },
+          "alternatives": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "limitations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "stop_reason": {
+            "type": "string"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/Usage"
+          }
+        },
+        "required": [
+          "run_id",
+          "conclusion",
+          "component",
+          "fault_type",
+          "summary",
+          "evidence_ids",
+          "alternatives",
+          "limitations",
+          "stop_reason",
+          "usage"
+        ]
+      },
+      "Budget": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "currency": {
+            "type": "string",
+            "enum": [
+              "CNY"
+            ]
+          },
+          "cap_micro_cny": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "admission_cap_micro_cny": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "settled_micro_cny": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reserved_micro_cny": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "uncertain_micro_cny": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "available_micro_cny": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "currency",
+          "cap_micro_cny",
+          "admission_cap_micro_cny",
+          "settled_micro_cny",
+          "reserved_micro_cny",
+          "uncertain_micro_cny",
+          "available_micro_cny"
+        ]
+      },
+      "IncidentList": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Incident"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "StrategyList": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Strategy"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "RunPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Run"
+            }
+          },
+          "next_cursor": {
+            "type": "string",
+            "description": "空字符串表示没有下一页"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor"
+        ]
+      },
+      "EventPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Event"
+            }
+          },
+          "next_cursor": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "下一次 after_seq；没有新记录时等于本次 after_seq"
+          },
+          "has_more": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "has_more"
+        ]
+      },
+      "EvidencePage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            }
+          },
+          "next_cursor": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "下一次 after_seq；使用内部证据递增序号，非数组下标"
+          },
+          "has_more": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "has_more"
+        ]
+      }
+    }
+  }
+}

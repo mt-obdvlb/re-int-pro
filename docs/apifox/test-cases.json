@@ -1,0 +1,482 @@
+{
+  "status": "design",
+  "description": "用例设计源，operation_id需绑定Apifox生成的真实endpointId；非可直接导入的CLI payload。API-05在运行时生成case_nonce。",
+  "cases": [
+    {
+      "case_key": "API-01",
+      "operation_id": "health",
+      "name": "存活与版本",
+      "category": "正向",
+      "parameters": {
+        "path": {},
+        "query": {},
+        "header": {}
+      },
+      "body": null,
+      "assertions": [
+        {
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "200"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.status",
+          "value": "ok"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "exists",
+          "path": "$.version"
+        }
+      ]
+    },
+    {
+      "case_key": "API-02",
+      "operation_id": "listIncidents",
+      "name": "演示任务列表",
+      "category": "正向",
+      "parameters": {
+        "path": {},
+        "query": {},
+        "header": {}
+      },
+      "body": null,
+      "assertions": [
+        {
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "200"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "exists",
+          "path": "$.items"
+        }
+      ]
+    },
+    {
+      "case_key": "API-03",
+      "operation_id": "getIncident",
+      "name": "任务不存在",
+      "category": "负向",
+      "parameters": {
+        "path": {
+          "incident_id": "missing_incident"
+        },
+        "query": {},
+        "header": {}
+      },
+      "body": null,
+      "assertions": [
+        {
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "404"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.code",
+          "value": "NOT_FOUND"
+        }
+      ]
+    },
+    {
+      "case_key": "API-04",
+      "operation_id": "listStrategies",
+      "name": "六种策略",
+      "category": "正向",
+      "parameters": {
+        "path": {},
+        "query": {},
+        "header": {}
+      },
+      "body": null,
+      "assertions": [
+        {
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "200"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.items.length",
+          "value": "6"
+        }
+      ]
+    },
+    {
+      "case_key": "API-05",
+      "operation_id": "createRun",
+      "name": "创建合法诊断运行",
+      "category": "正向",
+      "parameters": {
+        "path": {},
+        "query": {},
+        "header": {
+          "Idempotency-Key": "probeops-api05-{{case_nonce}}"
+        }
+      },
+      "body": {
+        "incident_id": "demo_001",
+        "strategy_id": "competitive_cost",
+        "limits": {
+          "max_steps": 12,
+          "max_llm_calls": 16,
+          "max_wall_seconds": 180,
+          "max_cost_micro_cny": 250000
+        }
+      },
+      "assertions": [
+        {
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "202"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "exists",
+          "path": "$.run_id"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.status",
+          "value": "queued"
+        }
+      ]
+    },
+    {
+      "case_key": "API-06",
+      "operation_id": "createRun",
+      "name": "缺少incident_id",
+      "category": "负向",
+      "parameters": {
+        "path": {},
+        "query": {},
+        "header": {
+          "Idempotency-Key": "probeops-api06-validation"
+        }
+      },
+      "body": {
+        "strategy_id": "competitive_cost",
+        "limits": {
+          "max_steps": 12,
+          "max_llm_calls": 16,
+          "max_wall_seconds": 180,
+          "max_cost_micro_cny": 250000
+        }
+      },
+      "assertions": [
+        {
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "422"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.code",
+          "value": "VALIDATION_ERROR"
+        }
+      ]
+    },
+    {
+      "case_key": "API-07",
+      "operation_id": "createRun",
+      "name": "探测次数超上限",
+      "category": "边界值",
+      "parameters": {
+        "path": {},
+        "query": {},
+        "header": {
+          "Idempotency-Key": "probeops-api07-validation"
+        }
+      },
+      "body": {
+        "incident_id": "demo_001",
+        "strategy_id": "competitive_cost",
+        "limits": {
+          "max_steps": 13,
+          "max_llm_calls": 16,
+          "max_wall_seconds": 180,
+          "max_cost_micro_cny": 250000
+        }
+      },
+      "assertions": [
+        {
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "422"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.code",
+          "value": "VALIDATION_ERROR"
+        }
+      ]
+    },
+    {
+      "case_key": "API-08",
+      "operation_id": "createRun",
+      "name": "非法策略",
+      "category": "负向",
+      "parameters": {
+        "path": {},
+        "query": {},
+        "header": {
+          "Idempotency-Key": "probeops-api08-validation"
+        }
+      },
+      "body": {
+        "incident_id": "demo_001",
+        "strategy_id": "arbitrary",
+        "limits": {
+          "max_steps": 12,
+          "max_llm_calls": 16,
+          "max_wall_seconds": 180,
+          "max_cost_micro_cny": 250000
+        }
+      },
+      "assertions": [
+        {
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "422"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.code",
+          "value": "VALIDATION_ERROR"
+        }
+      ]
+    },
+    {
+      "case_key": "API-09",
+      "operation_id": "listRuns",
+      "name": "运行列表分页",
+      "category": "正向",
+      "parameters": {
+        "path": {},
+        "query": {
+          "limit": "20"
+        },
+        "header": {}
+      },
+      "body": null,
+      "assertions": [
+        {
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "200"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "exists",
+          "path": "$.items"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "exists",
+          "path": "$.next_cursor"
+        }
+      ]
+    },
+    {
+      "case_key": "API-10",
+      "operation_id": "getRun",
+      "name": "运行不存在",
+      "category": "负向",
+      "parameters": {
+        "path": {
+          "run_id": "missing_run"
+        },
+        "query": {},
+        "header": {}
+      },
+      "body": null,
+      "assertions": [
+        {
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "404"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.code",
+          "value": "NOT_FOUND"
+        }
+      ]
+    },
+    {
+      "case_key": "API-11",
+      "operation_id": "cancelRun",
+      "name": "取消不存在运行",
+      "category": "负向",
+      "parameters": {
+        "path": {
+          "run_id": "missing_run"
+        },
+        "query": {},
+        "header": {}
+      },
+      "body": {
+        "reason": "测试不存在运行"
+      },
+      "assertions": [
+        {
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "404"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.code",
+          "value": "NOT_FOUND"
+        }
+      ]
+    },
+    {
+      "case_key": "API-12",
+      "operation_id": "listEvents",
+      "name": "非法事件游标",
+      "category": "边界值",
+      "parameters": {
+        "path": {
+          "run_id": "missing_run"
+        },
+        "query": {
+          "after_seq": "-1"
+        },
+        "header": {}
+      },
+      "body": null,
+      "assertions": [
+        {
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "422"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.code",
+          "value": "VALIDATION_ERROR"
+        }
+      ]
+    },
+    {
+      "case_key": "API-13",
+      "operation_id": "listEvidences",
+      "name": "证据运行不存在",
+      "category": "负向",
+      "parameters": {
+        "path": {
+          "run_id": "missing_run"
+        },
+        "query": {},
+        "header": {}
+      },
+      "body": null,
+      "assertions": [
+        {
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "404"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.code",
+          "value": "NOT_FOUND"
+        }
+      ]
+    },
+    {
+      "case_key": "API-14",
+      "operation_id": "getReport",
+      "name": "报告运行不存在",
+      "category": "负向",
+      "parameters": {
+        "path": {
+          "run_id": "missing_run"
+        },
+        "query": {},
+        "header": {}
+      },
+      "body": null,
+      "assertions": [
+        {
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "404"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.code",
+          "value": "NOT_FOUND"
+        }
+      ]
+    },
+    {
+      "case_key": "API-15",
+      "operation_id": "getBudget",
+      "name": "项目预算边界",
+      "category": "正向",
+      "parameters": {
+        "path": {},
+        "query": {},
+        "header": {}
+      },
+      "body": null,
+      "assertions": [
+        {
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "200"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.currency",
+          "value": "CNY"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.cap_micro_cny",
+          "value": "500000000"
+        },
+        {
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.admission_cap_micro_cny",
+          "value": "450000000"
+        }
+      ]
+    }
+  ]
+}
