@@ -26,3 +26,8 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 node_modules/
+.runtime/
+frontend/dist/
+frontend/coverage/
+*.tsbuildinfo
+apifox-reports/

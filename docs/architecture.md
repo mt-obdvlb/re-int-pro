@@ -1,6 +1,6 @@
 # 架构与关键决策
 
-状态：实施前方案，2026-09-05。约束来自用户；技术版本最终由搭建阶段锁文件记录，当前未安装依赖。
+状态：全项目设计，2026-09-05；P1 于2026-09-06实现基础子集，版本由 uv.lock 与 frontend/pnpm-lock.yaml 锁定。当前已实现 React/FastAPI、SQLite/独立 worker、FakeLLM/模拟 metrics、JSON logging/本地 OTel exporter。真实实验组件、竞争策略、百炼和金额账本仍待后续关卡；[P1验收](p1-validation.md) 是当前完成范围的依据。
 
 ## 技术栈
 

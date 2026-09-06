@@ -3,12 +3,12 @@
   "info": {
     "title": "ProbeOps 诊断 Agent API",
     "version": "0.1.0",
-    "description": "T1 设计契约。仅本机演示，Agent 无写入或注入故障工具；实验控制器单独运行。Apifox project=8800905，main，Git Spec 模式，以本文件为契约源。"
+    "description": "T1 接口契约。P1 已实现本机 FakeLLM 基础链路，仅 fixed 策略可运行；其他策略创建返回 503 STRATEGY_UNAVAILABLE。模拟结果不构成真实根因判断。Agent 无写入或注入故障工具。Apifox project=8800905，main，Git Spec 模式，以本文件为契约源。"
   },
   "servers": [
     {
       "url": "http://127.0.0.1:8000",
-      "description": "未来本地开发后端（当前未搭建）"
+      "description": "本地开发后端（P1 FakeLLM）"
     }
   ],
   "tags": [

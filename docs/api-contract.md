@@ -1,6 +1,6 @@
 # API 契约与 Apifox 维护
 
-接口字段的机器可读定义见 [openapi.json](api/openapi.json)：OpenAPI 3.0.3，11 条路径、12 个操作、19 个数据模型。本文补充行为语义；后端尚未实现。
+接口字段的机器可读定义见 [openapi.json](api/openapi.json)：OpenAPI 3.0.3，11 条路径、12 个操作、19 个数据模型。P1 已实现这些路由的 FakeLLM 基础行为，策略仅 fixed 可用；真实机制与费用账本待 P3。本文描述全项目目标语义，当前验收子集见 [P1记录](p1-validation.md)。
 
 ## 接口清单
 

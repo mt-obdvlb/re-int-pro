@@ -12,7 +12,11 @@
 - [用例设计快照](test-cases.json)：按operationId记录输入/预期，便于评审；不是直接导入的CLI payload。后续用例在Apifox维护后同步此快照，不能在两处独立修改。
 - 将Apifox导出与仓库源规范化对照：19模型一致；12操作的方法/路径/operationId/参数required与schema/请求体/响应状态与schema一致。忽略UI扩展和描述性字段。
 
-后端尚未搭建，**15个用例均未运行**；保存和回读不等于后端断言通过。本轮不启用云Mock或公开文档站点。API-16～24场景在P1/P4有真实fixture后创建，当前没有空场景/空套件。
+P0 时15个用例均未运行。P1 已启动真实 FastAPI 后端，并执行 API-01（411147565）：1次HTTP请求、3条断言、0失败；最终请求耗时13ms只是单次观测，不是性能基准。环境48818912指向127.0.0.1:8000，名称经CLI schema validate→update→get改为“本地开发后端（P1 FakeLLM）”。原始报告 `.runtime/apifox/p1-health-final.json` 仅本地保存，没有上传云端。其余14个用例仍未运行，API-16～24完整业务场景留到P3/P4。无空场景/空套件。
+
+```bash
+apifox run --project 8800905 --branch main --test-case 411147565 --environment 48818912 --reporters cli,json --out-dir .runtime/apifox --out-file p1-health-final --upload-report false
+```
 
 Spec解析默认将接口显示为released，源文件已补`x-apifox-status: developing`，以表达待开发状态。该标签仅为设计工作状态，不能代替运行验收。
 

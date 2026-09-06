@@ -1,6 +1,6 @@
 # 开发约定与环境准备
 
-当前是文档阶段；下列内容是后续搭建约定，尚未安装依赖、创建应用或调用百炼。已检查本机为 Apple Silicon/16GB，uv、node、pnpm、Apifox CLI 可用；CLI版本2.2.9。实际应用兼容性待P1。
+当前 P1 已搭建：Python3.12/uv、React/TypeScript/Vite/pnpm、FastAPI、SQLite worker 与本地 OTel。未调用百炼。实际安装、启动、测试命令见 [README](../README.md)，验证边界见 [P1记录](p1-validation.md)。Apifox CLI 2.2.9。
 
 ## 配置约定
 
@@ -15,13 +15,13 @@
 | LOG_LEVEL | INFO | DEBUG也不得记录密钥/原始正文 |
 | OTEL_EXPORTER_OTLP_ENDPOINT | 本地collector/Jaeger地址 | 本地开发；不把观测发到第三方云 |
 
-P1创建`.env.example`时只写占位符并解释变量，不改现有`.env`。通过路径定位读取项目配置，不在shell中 `source .env` 执行其中内容。启动失败仅报缺哪个变量，不打印配置对象或密钥值。uv管理Python，pnpm管理前端，安装后提交对应锁文件。
+P1 已创建 `.env.example`，没有修改现有 `.env`。通过路径定位读取项目配置，不在 shell 中 `source .env` 执行内容。配置失败只返回固定安全提示，不打印配置对象或密钥值。uv 管理 Python，pnpm 管理前端，两个锁文件随提交维护。
 
 ## 日常开发顺序
 
 先读阶段记录→本阶段需求/契约→当前Git差异；用小提交完成单一可验证行为。接口变更先更改Spec源和Apifox测试设计，后改FastAPI和前端类型。没有依据不引入Agent框架、消息中间件、云服务或训练工具。
 
-运行命令随实际脚本落地补充，不写不存在的“开箱即用”。P1应提供：前后端启动、worker启动、实验依赖启停、FakeLLM smoke、OTel查看、Apifox本地测试、清理测试数据的独立命令。清理默认只作用于临时测试目录，正式观测归档不可被一条模糊命令删除。
+`uv run python scripts/dev.py` 启停本次启动的三项本地服务；端口 5173/8000。`FAKE_DELAY_SECONDS=5 uv run python scripts/dev.py` 可放慢演示便于取消观察，默认0.8秒。`scripts/trace.py` 查询链路。pytest 使用独立临时目录，不删除真实运行。P1 不需要实验依赖，容器启停在 P2 落地；不提供模糊清库命令。
 
 ## Git 与贡献记录
 
@@ -32,4 +32,4 @@ P1创建`.env.example`时只写占位符并解释变量，不改现有`.env`。�
 
 ## 搭建前仍需确认的事实
 
-地区/模型权限、实际usage字段、SDK无关的JSON格式输出稳定性、容器资源占用和Apifox runner的真实后端报告均为 **Unverified**。这些有明确P1/P2验收路径，不阻止规划交付，也不能在面试稿中写成已经通过。
+地区/模型权限、实际 usage、模型 JSON 输出稳定性、容器资源占用仍为 **Unverified**，按 P2/P3 核验。Apifox health 已有真实后端报告；其他接口、测试矩阵和性能承诺不能据此一并宣布通过。

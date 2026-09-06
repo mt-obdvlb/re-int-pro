@@ -1,6 +1,6 @@
 # 全项目实施计划与阶段关卡
 
-用户已确认 T1，并批准本轮规划和文档完善；**应用搭建尚待下一次批准**。本文件将后续工作安排完整，但不授权自动执行下一阶段。各阶段完成后报告文件、测试、费用和提交，再等用户批准。
+用户已确认 T1；2026-09-06 明确批准 **P1 真正搭建**。本轮交付 P1，P2 仍需验收批准。各阶段完成后报告文件、测试、费用和提交，再等用户批准。
 
 ## 工时与交付
 
@@ -20,11 +20,11 @@
 
 依赖：P1→P2→P3→P4→P5→P6。前端视觉草稿可在 P3 内设计，但不为并行而引入多人或多 Agent。若每周 15 小时约 19 周，每周 20 小时约 14 周，只是工作量换算，不假定用户考试日程。
 
-## 第一轮真正搭建的具体范围（待批准）
+## 第一轮真正搭建的具体范围（P1 本轮）
 
 创建实际前后端目录、锁文件与最小 CI；React 空态/运行页框架，FastAPI health 与契约错误处理；SQLite 初始迁移、运行事件持久化；FakeLLM 与一项假探测，JSON logging 与本地 OTel span；最小安装/运行说明、`.env.example` 无密钥模板；Apifox health 用例指向本地后端并保存报告。此关先证明开发链路成立，不提前堆完四类故障与全部算法。
 
-P1 验收建议命令在真实脚本创建后写入 README：`uv sync --frozen`、`uv run pytest`、`uv run ruff check .`、`pnpm install --frozen-lockfile`、`pnpm typecheck`、`pnpm build`。当前仅是将要提供的命令清单，仓库现在不可执行这些应用命令。CI 不使用真实 BAILIAN_API。
+P1 运行与验收命令已写入 README：uv 安装/Python 检查，frontend 中 pnpm 安装/类型/lint/test/build；`uv run python scripts/dev.py` 同时启动三项本地服务。CI 不使用真实 BAILIAN_API。完整前端业务与所有算法、实验环境仍按 P2–P6 推进。
 
 ## 风险与收敛
 

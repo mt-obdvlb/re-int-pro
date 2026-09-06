@@ -1,6 +1,6 @@
 # 测试设计与验收清单
 
-本轮交付测试设计和 Apifox 资源，**当前没有真实后端**；未执行接口业务测试，不能以 Mock 或 schema validate 声称服务通过。运行测试等到 P1/P4，具体资源状态见 [Apifox 记录](apifox/README.md)。
+本文件为全项目测试设计。P1 已提供真实本地后端：pytest 覆盖基础链路、事务与错误契约，Apifox API-01 已真实执行；其他 Apifox 用例仍按 P3/P4 准备实际 fixture 后验收。具体执行结果见 [P1记录](p1-validation.md) 与 [Apifox记录](apifox/README.md)，不能以 Mock 或 schema validate 声称服务通过。
 
 ## API 用例矩阵
 

@@ -2,7 +2,7 @@
   "project_id": 8800905,
   "branch": "main",
   "cli_version": "2.2.9",
-  "verified_date": "2026-09-05",
+  "verified_date": "2026-09-06",
   "cases": [
     {
       "case_key": "API-01",
@@ -12,7 +12,14 @@
       "assertions": 3,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_backend_not_built"
+      "execution": "passed_local_backend_2026-09-06",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 3,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/p1-health-final.json",
+        "uploaded": false
+      }
     },
     {
       "case_key": "API-02",
@@ -22,7 +29,7 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_backend_not_built"
+      "execution": "not_run_in_p1"
     },
     {
       "case_key": "API-03",
@@ -32,7 +39,7 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_backend_not_built"
+      "execution": "not_run_in_p1"
     },
     {
       "case_key": "API-04",
@@ -42,7 +49,7 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_backend_not_built"
+      "execution": "not_run_in_p1"
     },
     {
       "case_key": "API-05",
@@ -52,7 +59,7 @@
       "assertions": 3,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_backend_not_built"
+      "execution": "not_run_in_p1"
     },
     {
       "case_key": "API-06",
@@ -62,7 +69,7 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_backend_not_built"
+      "execution": "not_run_in_p1"
     },
     {
       "case_key": "API-07",
@@ -72,7 +79,7 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_backend_not_built"
+      "execution": "not_run_in_p1"
     },
     {
       "case_key": "API-08",
@@ -82,7 +89,7 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_backend_not_built"
+      "execution": "not_run_in_p1"
     },
     {
       "case_key": "API-09",
@@ -92,7 +99,7 @@
       "assertions": 3,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_backend_not_built"
+      "execution": "not_run_in_p1"
     },
     {
       "case_key": "API-10",
@@ -102,7 +109,7 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_backend_not_built"
+      "execution": "not_run_in_p1"
     },
     {
       "case_key": "API-11",
@@ -112,7 +119,7 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_backend_not_built"
+      "execution": "not_run_in_p1"
     },
     {
       "case_key": "API-12",
@@ -122,7 +129,7 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_backend_not_built"
+      "execution": "not_run_in_p1"
     },
     {
       "case_key": "API-13",
@@ -132,7 +139,7 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_backend_not_built"
+      "execution": "not_run_in_p1"
     },
     {
       "case_key": "API-14",
@@ -142,7 +149,7 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_backend_not_built"
+      "execution": "not_run_in_p1"
     },
     {
       "case_key": "API-15",
@@ -152,7 +159,7 @@
       "assertions": 4,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_backend_not_built"
+      "execution": "not_run_in_p1"
     }
   ],
   "contract_source": "docs/api/openapi.json",
@@ -231,5 +238,6 @@
       "path": "/api/v1/runs/{run_id}/cancel",
       "operation_id": "cancelRun"
     }
-  ]
+  ],
+  "local_environment_id": 48818912
 }
