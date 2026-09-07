@@ -42,6 +42,7 @@
 ## 选题后的工程约束
 
 - Python 依赖用 uv、前端用 pnpm；实际搭建时锁版本，不写不存在的运行命令。
+- Python安装/运行遵循README的 `uv sync --no-editable --frozen`、`uv run --no-editable ...`；本机隐藏`.pth`会破坏editable导入，不能无参数重新同步回editable。所有应用命令从仓库根目录执行。
 - 总投入目标280小时、上限300小时；API预算不超过500元，准入450元，金额账本持久化。当前不消费模型。
 - Agent 仅使用四种只读观测工具；故障注入与真值评分在独立实验控制器，不将隐藏标签暴露给Agent。
 - `docs/api/openapi.json` 是唯一接口契约源；Apifox项目8800905、main、Git Spec模式，连接 `mt-obdvlb/re-int-pro`。先改规范、同步生成、CLI回读；不要直接修改生成接口或换成同名项目。

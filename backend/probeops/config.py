@@ -4,7 +4,9 @@ from typing import Literal
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-ROOT = Path(__file__).resolve().parents[2]
+# Commands run from the repository root. Resolve data independently of whether
+# Python imports this package from a source checkout or an installed wheel.
+ROOT = Path.cwd().resolve()
 
 
 class Settings(BaseSettings):

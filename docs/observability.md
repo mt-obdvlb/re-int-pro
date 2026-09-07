@@ -4,7 +4,7 @@
 
 P1 实现：dictConfig + contextvars + 2048 条有界日志队列，stdout/JSONL 10MB×5 轮转；OTel BatchSpanProcessor 向本地 JSONL 导出，API/worker 分文件。记录 HTTP、run.accept（Link 到创建 HTTP）、worker.claim、diagnosis.run、agent.step/select_probe、llm.request、tool.query_metrics、storage.commit。标准 traceparent 传播，不接收 baggage；正常/取消/失败/租约恢复事件持久化。异常正文/请求参数默认不输出，仅保留受控事件与异常类型。
 
-`uv run python scripts/trace.py <trace_id>` 可查看链路。当前没有接入 Jaeger/OTLP、日志按天清理、实时指标汇总、provider 重试或费用 uncertain 状态；不得将后文全量验收矩阵标记为已实现。P1 验证范围见 [验收记录](p1-validation.md)。
+`uv run --no-editable python scripts/trace.py <trace_id>` 可查看链路。当前没有接入 Jaeger/OTLP、日志按天清理、实时指标汇总、provider 重试或费用 uncertain 状态；不得将后文全量验收矩阵标记为已实现。P1 验证范围见 [验收记录](p1-validation.md)。
 
 ## 三层记录
 

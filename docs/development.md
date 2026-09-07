@@ -21,7 +21,17 @@ P1 已创建 `.env.example`，没有修改现有 `.env`。通过路径定位读�
 
 先读阶段记录→本阶段需求/契约→当前Git差异；用小提交完成单一可验证行为。接口变更先更改Spec源和Apifox测试设计，后改FastAPI和前端类型。没有依据不引入Agent框架、消息中间件、云服务或训练工具。
 
-`uv run python scripts/dev.py` 启停本次启动的三项本地服务；端口 5173/8000。`FAKE_DELAY_SECONDS=5 uv run python scripts/dev.py` 可放慢演示便于取消观察，默认0.8秒。`scripts/trace.py` 查询链路。pytest 使用独立临时目录，不删除真实运行。P1 不需要实验依赖，容器启停在 P2 落地；不提供模糊清库命令。
+`uv run --no-editable python scripts/dev.py` 启停本次启动的三项本地服务；端口 5173/8000。`FAKE_DELAY_SECONDS=5 uv run --no-editable python scripts/dev.py` 可放慢演示便于取消观察，默认0.8秒。`scripts/trace.py` 查询链路。pytest 使用独立临时目录，不删除真实运行。P1 不需要实验依赖，容器启停在 P2 落地；不提供模糊清库命令。
+
+## 本机 editable 包兼容性
+
+2026-09-07确认：本机 `_probeops.pth` 被反复设置macOS `UF_HIDDEN`，Python3.12.13的`site.addpackage`会跳过隐藏`.pth`。清除属性后暂时恢复，但下一次检查又出现；设置属性的程序尚未确认，因此没有更改全局隐藏文件行为或Python安全检查。
+
+项目采用 `uv sync --no-editable --frozen` 与 `uv run --no-editable ...` 进行普通wheel安装，避免依赖editable路径文件。`pyproject.toml` 的uv cache-keys追踪backend下Python源码，修改后自动重新构建。配置与契约从仓库根目录解析，不从site-packages位置推断；所有README命令须在仓库根目录执行。CI通过 `UV_NO_EDITABLE=1` 验证同一路径。
+
+依据：[uv同步与非editable安装](https://docs.astral.sh/uv/concepts/projects/sync/#editable-installation)、[uv缓存依赖规则](https://docs.astral.sh/uv/concepts/cache/#dynamic-metadata)；实际参数已通过本机`uv help sync/run`和真实安装核验。
+
+直接运行不带参数的 `uv run` 可能把项目重新同步为editable；请遵循README命令。依赖锁与包管理器没有更换，不需要反复chflags或临时PYTHONPATH。
 
 ## Git 与贡献记录
 

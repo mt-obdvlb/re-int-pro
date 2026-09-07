@@ -59,26 +59,26 @@ React + TypeScript + Vite 前端；Python FastAPI 后端；Agent 由纯 Python �
 需要 uv、Node.js 24、pnpm 11.5.1。Python 3.12 由 uv 管理。所有命令从仓库根目录执行：
 
 ```bash
-uv sync --frozen
+uv sync --no-editable --frozen
 pnpm --dir frontend install --frozen-lockfile
-uv run python scripts/dev.py
+uv run --no-editable python scripts/dev.py
 ```
 
 打开 [本地工作台](http://127.0.0.1:5173)，点击“新建运行”。Ctrl+C 关闭本次启动的前端、API 与 worker。也可以分别启动：
 
 ```bash
-uv run uvicorn probeops.api:app --host 127.0.0.1 --port 8000 --no-access-log
-uv run python -m probeops.worker
+uv run --no-editable uvicorn probeops.api:app --host 127.0.0.1 --port 8000 --no-access-log
+uv run --no-editable python -m probeops.worker
 pnpm --dir frontend dev
 ```
 
 默认 `LLM_MODE=fake`，无需密钥或实验容器。不要覆盖已有 `.env`；新环境可参考 [.env.example](.env.example)。P1 拒绝 live 模式，不消费百炼额度。SQLite 与本地脱敏遥测保存在忽略的 `.runtime/`。目前支持固定流程模拟、创建/列表/详情/取消、事件与证据回读、未知结论报告；服务仅绑定本机。
 
 ```bash
-uv run pytest -q
-uv run mypy
-uv run ruff check backend scripts
-uv run ruff format --check backend scripts
+uv run --no-editable pytest -q
+uv run --no-editable mypy
+uv run --no-editable ruff check backend scripts
+uv run --no-editable ruff format --check backend scripts
 pnpm --dir frontend typecheck
 pnpm --dir frontend lint
 pnpm --dir frontend test
@@ -87,7 +87,7 @@ pnpm --dir frontend build
 pnpm --dir frontend generate:api
 ```
 
-从运行详情复制链路 ID：`uv run python scripts/trace.py <trace_id>`，查看 API 创建关联、worker、step、FakeLLM、tool 和 storage spans。P1 使用本地 JSONL exporter；Jaeger/OTLP、真实模型重试与预算账本在后续阶段验收。
+从运行详情复制链路 ID：`uv run --no-editable python scripts/trace.py <trace_id>`，查看 API 创建关联、worker、step、FakeLLM、tool 和 storage spans。P1 使用本地 JSONL exporter；Jaeger/OTLP、真实模型重试与预算账本在后续阶段验收。
 
 Apifox 的真实健康测试（先启动后端，CLI 已登录）：
 

@@ -18,6 +18,9 @@ packages = ["backend/probeops"]
 [tool.hatch.build]
 dev-mode-dirs = ["backend"]
 
+[tool.uv]
+cache-keys = [{ file = "pyproject.toml" }, { file = "backend/**/*.py" }]
+
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
 

@@ -11,6 +11,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> int:
+    # Give a clear failure before any child services start.
+    try:
+        import probeops  # noqa: F401
+    except ModuleNotFoundError:
+        print("请从仓库根目录运行：uv run --no-editable python scripts/dev.py", file=sys.stderr)
+        return 1
     processes: list[subprocess.Popen[bytes]] = []
     stopping = False
 

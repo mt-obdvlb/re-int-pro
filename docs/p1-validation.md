@@ -15,8 +15,8 @@
 
 | 检查 | 命令/方法 | 结果与边界 |
 | --- | --- | --- |
-| 后端集成 | `uv run pytest -q` | 9项通过：正常闭环与12操作响应/路径契约、并发幂等与领取、排队/执行取消、deadline/租约恢复、分页/错误/脱敏、trace父子关系、工具失败、路由覆盖、exporter失败不阻断 |
-| Python 类型/规范 | `uv run mypy`；`uv run ruff check backend scripts`；`uv run ruff format --check backend scripts` | 通过 |
+| 后端集成 | `uv run --no-editable pytest -q` | 9项通过：正常闭环与12操作响应/路径契约、并发幂等与领取、排队/执行取消、deadline/租约恢复、分页/错误/脱敏、trace父子关系、工具失败、路由覆盖、exporter失败不阻断 |
+| Python 类型/规范 | `uv run --no-editable mypy`；`uv run --no-editable ruff check backend scripts`；`uv run --no-editable ruff format --check backend scripts` | 通过 |
 | 前端行为 | `pnpm --dir frontend test` | 1项通过：网络结果不明确时重试复用相同幂等键和正文，成功后清除待确认请求 |
 | 前端工程 | typecheck、lint、format:check、generate:api、build | 通过；不使用运行时手写假记录替代API |
 | Apifox真实请求 | project8800905/main，case411147565，environment48818912 | 1请求/3断言/0失败；本机FastAPI，未使用Mock，未上传报告 |
@@ -57,7 +57,11 @@ Apifox最终原始报告：`.runtime/apifox/p1-health-final.json`（忽略，不
 P1验证的是架构闭环，不是竞争假设机制的有效性。真实观测环境/四类工具（P2）、百炼HTTP适配/成本账本/机制与六种策略（P3）、完整用例和产品验收（P4）、实验和正式面试材料（P5/P6）尚未完成。
 目前OTel只导出本地JSONL；Jaeger/OTLP、provider429重试与uncertain费用、按天日志清理和指标面板仍待后续。服务只绑定本机，无多用户鉴权或公共部署。本轮百炼调用0次、API费用0元；内置设计图生成不是百炼调用。
 
-当前在现有Git工作区安装editable包时曾遇到自动路径推断遗漏backend，已显式设置Hatch `dev-mode-dirs=["backend"]`并重装、连续uv运行验证；不依赖临时PYTHONPATH。pnpm按本机版本固定11.5.1，仅放行esbuild构建脚本。
+2026-09-07本机复核：editable包无法导入的根因是 `_probeops.pth` 带macOS `UF_HIDDEN`（flags=32832），当前Python会跳过它。路径正确，清除属性只短暂有效，后续检查隐藏位再次出现；设置该属性的外部程序尚未确认。此前不能归因于Hatch路径推断。最终采用uv `--no-editable`普通wheel安装；uv cache-keys追踪源码，配置/契约按仓库根目录解析，README和CI使用同一模式。无需修改全局隐藏行为、Python安全检查或临时PYTHONPATH。pnpm固定11.5.1，仅放行esbuild构建脚本。
+
+首次GitHub CI：[1689c8b对应运行](https://github.com/mt-obdvlb/re-int-pro/actions/runs/34028906264)，backend/frontend均成功。Actions提示部分action使用已弃用的Node20运行声明，由平台强制在Node24执行；不影响本次结果。主提交1689c8b已通过现有SSH认证推送并核对远程；未扩大HTTPS凭据权限。
+
+2026-09-07普通wheel模式复验：9项pytest、mypy与Ruff通过；不同进程重复导入成功，统一启动脚本后API和前端均返回200。浏览器新运行 `run_aaf3cfd89e1d4a07` 从running进入completed/ambiguous；trace查询能读到run.accept→worker.claim/diagnosis.run链。Apifox health再次1请求/3断言/0失败，原始报告 `.runtime/apifox/p1-health-wheel.json`，未上传。此修复不修改前端视觉或接口契约。
 
 ## 官方依据（2026-09-06核查）
 

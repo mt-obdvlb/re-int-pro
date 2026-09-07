@@ -24,7 +24,7 @@
 
 创建实际前后端目录、锁文件与最小 CI；React 空态/运行页框架，FastAPI health 与契约错误处理；SQLite 初始迁移、运行事件持久化；FakeLLM 与一项假探测，JSON logging 与本地 OTel span；最小安装/运行说明、`.env.example` 无密钥模板；Apifox health 用例指向本地后端并保存报告。此关先证明开发链路成立，不提前堆完四类故障与全部算法。
 
-P1 运行与验收命令已写入 README：uv 安装/Python 检查，frontend 中 pnpm 安装/类型/lint/test/build；`uv run python scripts/dev.py` 同时启动三项本地服务。CI 不使用真实 BAILIAN_API。完整前端业务与所有算法、实验环境仍按 P2–P6 推进。
+P1 运行与验收命令已写入 README：uv 安装/Python 检查，frontend 中 pnpm 安装/类型/lint/test/build；`uv run --no-editable python scripts/dev.py` 同时启动三项本地服务。CI 不使用真实 BAILIAN_API。完整前端业务与所有算法、实验环境仍按 P2–P6 推进。
 
 ## 风险与收敛
 
