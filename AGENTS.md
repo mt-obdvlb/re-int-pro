@@ -4,6 +4,8 @@
 
 本仓库用于计算机考研与复旦复试面试准备。用户已选择 T1：基于竞争假设与探测成本的故障诊断 Agent（ProbeOps）。目标是具备可验证的机制改进、工程深度和真实面试证据。
 
+用户明确复试场景是老师依据简历提问，现场不能展示项目。以简历主张能承受连续追问为准备标准，不以演示、长篇演讲稿或测试数量代替。工程版本交付不等于面试目标完成；当前差距与补强顺序见 `docs/interview-readiness.md`。缺少实验依据的亮点必须补验证或收缩主张，不能仅润色材料。
+
 默认中文。已确定 React + TypeScript + Vite 前端、Python FastAPI 后端；Agent 用 Python 自写，禁止引入 Agent 框架。LLM 使用阿里云百炼，现有 `.env` 中 `BAILIAN_API` 仅后端读取。logging 和 tracing 必须覆盖正常、异常、取消和恢复路径。详见 `docs/architecture.md`。
 
 ## 当前阶段与批准边界

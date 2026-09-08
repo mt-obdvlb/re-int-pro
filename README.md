@@ -4,6 +4,8 @@
 
 这是考研复试项目的受控实验系统：先采集本地服务观测，再让 Agent 在同一冻结快照上选择探测；不执行修复。
 
+**工程可运行不等于面试已准备好。** 复试按老师看简历提问、无法展示项目的场景准备；当前Agent价值、成本项效果与个人掌握仍需检验，见 [面试准备差距](docs/interview-readiness.md)。
+
 ## 启动
 
 需要 uv、Node.js 24、pnpm 11.5.1，所有命令从仓库根目录执行：
@@ -59,7 +61,7 @@ pnpm --dir frontend generate:api
 - [模块交付](docs/module-delivery.md)、[项目记录](docs/project-plan.md)、[实施计划](docs/implementation-plan.md)：已按用户指令连续实现，不再逐个 P 阶段批准。
 - [需求](docs/requirements.md)、[架构](docs/architecture.md)、[Agent机制](docs/agent-design.md)、[logging/tracing](docs/observability.md)、[开发配置](docs/development.md)。
 - [唯一接口契约](docs/api/openapi.json)、[API语义](docs/api-contract.md)、[Apifox](docs/apifox/README.md)、[测试](docs/testing.md)。
-- [评测与预算](docs/evaluation-plan.md)、[面试讲稿](docs/interview-guide.md)。
+- [评测与预算](docs/evaluation-plan.md)、[简历与分层追问](docs/interview-guide.md)、[面试准备差距](docs/interview-readiness.md)。
 - 历史：[候选调研](docs/topic-research.md)、[选题预演稿](docs/topic-interview-scripts.md)、[研究来源](docs/topic-evidence.md)、[P1验收](docs/p1-validation.md)。
 
 提交仅含本项目源码、公共合成观测和脱敏汇总；不提交密钥、SQLite、隐藏标签或原始运行日志。历史预演稿不代表本人已完成经历。协作规范见 [AGENTS.md](AGENTS.md)。
