@@ -11,8 +11,16 @@ ROOT = Path.cwd().resolve()
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=ROOT / ".env", extra="ignore")
-    llm_mode: Literal["fake"] = "fake"
+    llm_mode: Literal["fake", "bailian"] = "fake"
     bailian_api: SecretStr = SecretStr("")
+    bailian_base_url: Literal["https://dashscope.aliyuncs.com/compatible-mode/v1"] = (
+        "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    )
+    bailian_model: Literal["qwen-plus-2025-12-01"] = "qwen-plus-2025-12-01"
+    probeops_snapshot_dir: Path = ROOT / "data/snapshots"
+    # A lower operator cap is separate from the immutable 450 CNY admission cap.
+    probeops_spend_cap_micro_cny: int = Field(default=1000000, ge=1, le=450000000)
+    otlp_endpoint: Literal["", "http://127.0.0.1:4318/v1/traces"] = ""
     probeops_db_path: Path = ROOT / ".runtime/probeops.sqlite3"
     probeops_telemetry_dir: Path = ROOT / ".runtime/telemetry"
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
@@ -23,4 +31,4 @@ def settings() -> Settings:
     try:
         return Settings()
     except ValueError:
-        raise SystemExit("配置无效。P1 仅支持 LLM_MODE=fake；检查配置类型。") from None
+        raise SystemExit("配置无效。检查服务端配置类型和供应商白名单。") from None

@@ -1,0 +1,17 @@
+{
+  "version": "cost-v1",
+  "formula": "p50_ms/100 + p50_bytes/4096, min 0.1",
+  "manifest_hash": "49f0172ce08b65418f4c5fddf5236cc4a27601d8911131116a1dfe41b9527401",
+  "costs": {
+    "api_latency": 0.12578368175309151,
+    "pool_wait": 0.1053743995144032,
+    "queue_depth": 0.1,
+    "cache_latency": 0.10391039540991187,
+    "pool_events": 0.1,
+    "queue_events": 0.1,
+    "cache_events": 0.1,
+    "config_events": 0.1,
+    "request_trace": 0.1,
+    "timeout_config": 0.1
+  }
+}

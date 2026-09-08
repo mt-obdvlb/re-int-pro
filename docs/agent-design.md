@@ -1,52 +1,51 @@
-# 竞争假设、探测成本与百炼调用
+# Agent 机制、工具与百炼
 
-状态：待实现、待验证。理论及近邻见 [原始证据](topic-evidence.md)；本设计不声称首创 Agent 根因诊断，也不把启发式当成贝叶斯最优算法。
+2026-09-08：代码为 engine.py / reasoning.py / observations.py / provider.py。Agent循环由Python自写，不使用Agent框架。
 
-## 状态机与算法
+## 可检验的机制
 
-一轮状态包含：告警窗口、服务依赖图、最多四个候选 H、已取得证据 E、已执行探测的去重键、剩余调用/步数/时间/费用。候选包含 component、fault_type、预期观测、反驳条件、证据引用、整数支持分数；分数不是概率。始终保留“候选集可能不含真实原因”的出口。
+模型先提出1–4个候选，每个候选必须对全部10个probe填写high/normal/low/unknown预测，构成交叉预测矩阵。Pydantic拒绝漏项、重复项、非法组件/故障族、额外字段与不可用next_probe。分数、证据ID、结论不由模型填写。
 
-1. 初始模型调用从告警和工具目录提出最多四个候选。每个候选必须给出工具目录中可测量的预测；超过四个或引用不存在的证据判无效。
-2. 为尚未执行的合法探测形成候选集合 Q。每个候选对每个探测给出离散预期结果，如 high/normal/low/unknown；未知预测不计作有效区分。
-3. 对探测 q，统计 active 候选对中预期结果不同且双方非 unknown 的数量 D(q)。U(q)=D(q)/(c(q)+0.1)。c(q) 是冻结的成本单位：开发集工具耗时 p50/100ms + 返回字节数/4096，最低 0.1；只在开发集校准一次，并保存标定版本。真实耗时、返回量仍单独记录。并列按 c 较小、tool_name、参数规范化哈希排序。
-4. 执行分数最高的合法探测；失败作为工具失败证据，不等同于“指标正常”。去重键由快照版本、工具名、规范化参数生成；同样的查询不重新发出以刷证据。
-5. 模型将实际结果映射到已有预测，并提出支持/反驳关系。确定性验证器检查证据存在、指标阈值、时间窗口；可机器判定的观测优先用程序计算。每条独立有效证据支持 +1、反驳 -2，范围 [-20,20]；同源重复日志不重复加分。无法判断记 unresolved，不强行映射。
-6. 唯一领先候选至少有两项独立来源的支持、领先第二名至少 2 分、没有未解决的直接反驳时，才允许 located；这些是开发集阈值，不是证明。允许模型在新证据后替换被反驳候选一次，但记录 replacement，最多四个 active，不能无限产生新解释。
-7. 所有 D=0、连续两轮无新增有效证据、候选无法区分或预算耗尽时，返回 unresolved 和替代解释；最终报告由状态结构化渲染，模型不能越过终止校验。
+对于尚未被反驳的候选对，如果对同一probe预测不同且都非unknown，则为D增加1。竞争策略选 U(q)=D(q)/(c(q)+0.1) 最大的probe，同分按成本和ID稳定排序。c来自开发集校准文件，公式p50网关毫秒/100+p50摘要字节/4096，最低0.1。这是本地快照访问和结果体积代理，不是实际线上调用费，也不是统计信息增益。
 
-空候选需一次修正（计入调用上限），仍无合法候选则 unresolved；一项候选尚不满足支持条件时按固定最小成本验证探测执行，不能因为不存在候选对就宣布正确。图贪心基线使用服务依赖距离；完整方法可看到同一张图，但 U 不加入未经消融的额外权重。
+观测回来后重算支持+1、反驳−2，分数限制[-20,20]。unknown和非ok不打分。定位必须同时满足：至少两类工具通道提供异常匹配支持、领先分差≥2、无直接反驳、非unknown故障。正常观测匹配只加分，不能单独建立故障。两类通道不保证统计独立，同一请求的日志和trace可能相关；支持分数不是概率，也不证明因果。
 
-## 理论如何落地
+原候选全部反驳时最多重建一次，重新用已有证据校验。证据充分停止；两次unknown观测、竞争候选全部D=0、无剩余probe、预算/步数/调用/时限也终止并保留unresolved。探测开始即计入次数和成本，超时不会漏计。模型不能自行宣布成功。
 
-[Lindley 1956](https://doi.org/10.1214/aoms/1177728069) 将实验的信息价值形式化；这里借用“选择能改变当前不确定性的观测”的思想。精确信息增益要求可用的先验和似然，本项目缺少校准概率，所以使用候选对区分度代理，并专门测量预测与实测一致率。不得在面试中说实现了精确熵最优探测。
+## 六策略的具体差异
 
-[ReAct](https://arxiv.org/abs/2210.03629) 提供推理与行动反馈循环的直接依据；本项目把隐含在自由文本中的备选解释显式化，再由程序分配探测。[RCAgent](https://arxiv.org/abs/2310.16340) 和 [GALA](https://arxiv.org/abs/2608.08968) 是相近诊断方法；复现的简化基线必须标明“受启发”，不能称完整复现论文。新主张限定为此受控场景中成本与竞争解释组合的可检验效用。
+| ID | 行为 |
+| --- | --- |
+| competitive_cost | D/(c+0.1)，显式候选竞争与成本 |
+| no_cost | 最大D，去掉成本项的消融 |
+| random_probe | seed固定、剩余probe均匀随机 |
+| fixed | metrics→logs→trace→config固定顺序，最后模型提案仍需程序验证 |
+| react | 首轮提案，此后每步模型根据已观察结果选择next_probe |
+| graph_greedy | 根据当前最高分候选组件及预定义邻域选probe |
 
-如果预测根本不可靠，D 会选择看似能区分、实际没有帮助的工具。这是核心失败风险。实验必须报告预测准确性、候选覆盖率和 D 与真实排除数的关系；即使成功率没提升，也能判断失败出在候选、预测还是成本代理。
+六策略共享模型、工具、停止验证器和预算。react/graph_greedy是受启发的简化基线，不是论文完整复现。fixed也会提前满足共同停止条件，并非强制穷尽；比较时必须注明。
 
-## 工具契约与失败
+[Lindley的信息价值](https://doi.org/10.1214/aoms/1177728069) 支持按信息价值选择观测的思路；由于没有校准先验/似然，此处用候选区分代理，不能声称实现精确贝叶斯或最优熵降低。[ReAct](https://arxiv.org/abs/2210.03629) 支持行动与反馈循环，[RCAgent](https://arxiv.org/abs/2310.16340) 提供诊断近邻。完整研究来源保留在 [选题证据](topic-evidence.md)，机制优势仍待同预算实验。
 
-| 工具 | 有限输入 | 输出与边界 |
+## 有限只读工具
+
+| 工具 | 实际probe | 聚合 |
 | --- | --- | --- |
-| query_metrics | service、枚举 metric、窗口 | 有限时序、单位、聚合定义、来源；最多 120 点 |
-| query_logs | service、枚举 event_type、窗口、limit | 最多 50 条脱敏事件；不接受自由查询语言和文件路径 |
-| get_trace | 从观测发现的 trace_id | 单条请求链，最多 100 spans；不存在返回 empty |
-| read_config | service、白名单 key | 只读非敏感配置快照；密钥类配置无论是否存在均拒绝 |
+| query_metrics | api_latency、pool_wait、queue_depth、cache_latency | 有限120点，mean超过阈值为high |
+| query_logs | pool_events、queue_events、cache_events、config_events | 匹配事件存在为high，最多50条 |
+| get_trace | request_trace | 第一条采集请求，不能视为平均或最慢请求 |
+| read_config | timeout_config | request_timeout_ms：<100 low、100..1000 normal、>1000 high |
 
-窗口必须在 incident 内且跨度 ≤15 分钟；工具超时 5 秒、结果最大 32KB，截断有标识。单次 transient 工具失败可重试一次，计入探测上限和真实成本；不改变去重规则中的成功缓存。禁止任意网络目标、shell、文件写入、数据库改写、故障注入工具。预测不能包含真值目录、注入参数或故障文件名。
+参数是代码拥有的probe ID，服务/指标/窗口从目录与快照派生，不让模型传任意路径、网络地址或SQL。快照≤2MB、工具结果≤32KB，较长日志摘要保留数量和前三条；真正超界标记truncated/unknown。缺少数据是empty/unknown，不伪装normal。每次运行按快照+probe哈希去重。
 
-## 百炼适配器
+工具是本地只读快照读取，不存在在线网络transient重试；错误交worker记录failed，5秒工具时限受总deadline约束。故障注入、标签和评测控制器不作为Agent工具。
 
-计划默认北京地域兼容接口 `https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions`，模型 `qwen-plus-2025-12-01`，`enable_thinking=false`。官方模型页确认该地域快照支持结构化输出与工具调用；密钥的地域和模型访问权限尚未通过请求验证。配置来自服务端 `.env` 的 `BAILIAN_API`，不得改名为其它变量后忽略用户现有设置。[官方模型页](https://help.aliyun.com/zh/model-studio/qwen-plus)、[兼容接口](https://help.aliyun.com/zh/model-studio/compatibility-of-openai-with-dashscope)。
+## 百炼与费用
 
-首版直接用 httpx POST，非流式、`response_format={"type":"json_object"}`；提示明确要求 JSON，再用 Pydantic 校验 Proposal。程序根据合法 Proposal 调用本地工具并把 Evidence 加入下一轮上下文；不依赖供应商原生 Function Calling 自动执行，也不假设 JSON 模式能保证语义正确。[Function Calling 文档](https://help.aliyun.com/zh/model-studio/qwen-function-calling) 作为后续协议备选，切换需固定新版本进行对比。
+实际已接通北京兼容接口，固定qwen-plus-2025-12-01、temperature=0、enable_thinking=false、JSON object、非流式httpx。提示proposal-v2要求完整交叉预测；每次尝试按UTF-8字节+256保守估计输入≤12000，输出≤2000，实际usage和模型标识回读校验。不是正式tokenizer上界证明，遇到usage超估计则标记PROVIDER_DRIFT并停止，保留已发生费用。
 
-每个请求输入上限 12,000 tokens、输出 `max_tokens=2000`；temperature=0，记录供应商实际模型标识和 usage。temperature=0 不保证完全确定，仍做三次独立重复。按实际 tokenizer 或经过校验的保守估算裁剪上下文，优先保留告警、结构化状态、关键证据；超限前拒绝请求，不让历史无限膨胀。首个集成检查必须验证 token 估算与 usage 偏差。
+connect/pool5秒、read/write30秒、总wall deadline限制await。429/5xx最多总3次尝试，指数退避+jitter，Retry-After最多10秒；401等不可重试错误停止。结构错误最多一次修正，包含在总3次中。所有尝试计入调用上限；取消在途请求不能撤销供应商费用。
 
-httpx connect 超时 5 秒、read/write 30 秒、pool 5 秒；用剩余 wall deadline 限制整体 await。429/可重试 5xx 最多两次附加尝试，指数退避带 jitter（1s、2s，上限 Retry-After 10s），每次都占 16 次总限额与预算。401/403/模型不存在/参数不合法不重试；一次 schema 修正调用也算尝试。成功终态前等候在途计费处理；取消无法撤销供应商已经受理的请求。
+2026-09-07核对 [官方模型页](https://help.aliyun.com/zh/model-studio/qwen-plus) 与 [兼容接口](https://help.aliyun.com/zh/model-studio/compatibility-of-openai-with-dashscope)：当前本项目价格常数为输入0.8元/百万、输出2元/百万token。每次预留13600 micro CNY，再按usage向上取整结算，失败无usage→uncertain保留。价格变更需更新冻结版本后重新验证。
 
-## 两种成本及账本
-
-探测成本单位用于 U(q) 排序，元用于 API 开销和硬性准入，二者绝不能混写。每次 LLM 请求先在 SQLite 事务中预留最坏费用（按输入上限和输出上限），响应后根据 usage 结算、释放差额；超时/断连无法确认费用时转 uncertain 保留，不自动退款。重试须再次预留。
-
-所有上限使用整数 micro_cny（1 元=1,000,000），计算向上取整。项目硬限 500 元，准入限 450 元，额外 50 元为账单偏差缓冲；当 settled+reserved+uncertain+下一次预留 >450 元，拒绝新调用。单运行相同规则比较 0.25 元。持久化账本仅覆盖本项目调用；共享账号的其它应用消费不能由本系统保证。运行后用百炼账单人工核对未知费用，保留调整记录，不覆盖原流水。
+默认操作限额1元；项目准入450元、总预算500元，单运行最高0.25元。SQLite事务同时检查全局与单运行限额；charge_events只追加，reconcile必须提供账单依据，仅调整uncertain，不覆盖原流水。系统仅保证本账本调用的准入，不保证共享账号其他应用费用。详见 [预算与评测](evaluation-plan.md)。

@@ -1,5 +1,6 @@
 """Run the three local services; Ctrl+C stops only processes started by this command."""
 
+import argparse
 import os
 import signal
 import subprocess
@@ -11,6 +12,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", choices=["fake", "bailian"])
+    parser.add_argument("--tracing", action="store_true", help="Export to local Jaeger OTLP")
+    args = parser.parse_args()
+    environment = os.environ.copy()
+    if args.mode:
+        environment["LLM_MODE"] = args.mode
+    if args.tracing:
+        environment["OTLP_ENDPOINT"] = "http://127.0.0.1:4318/v1/traces"
     # Give a clear failure before any child services start.
     try:
         import probeops  # noqa: F401
@@ -43,7 +53,9 @@ def main() -> int:
     ]
     try:
         for command in commands:
-            processes.append(subprocess.Popen(command, cwd=ROOT, start_new_session=True))
+            processes.append(
+                subprocess.Popen(command, cwd=ROOT, env=environment, start_new_session=True)
+            )
         print("ProbeOps: http://127.0.0.1:5173 | Ctrl+C 停止三个服务", flush=True)
         while not stopping:
             if any(process.poll() is not None for process in processes):

@@ -18,7 +18,7 @@ from starlette.exceptions import HTTPException
 
 from . import __version__
 from .config import ROOT, Settings, settings
-from .models import INCIDENT, STRATEGY, CancelRun, CreateRun, DomainError
+from .models import STRATEGIES, CancelRun, CreateRun, DomainError
 from .storage import Store, uid
 from .telemetry import Telemetry, context, log, span_id
 
@@ -31,9 +31,9 @@ def create_app(config: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         cfg = config or settings()
-        telemetry = Telemetry(cfg.probeops_telemetry_dir, "api", cfg.log_level)
+        telemetry = Telemetry(cfg.probeops_telemetry_dir, "api", cfg.log_level, cfg.otlp_endpoint)
         app.state.telemetry = telemetry
-        app.state.store = Store(cfg.probeops_db_path, telemetry)
+        app.state.store = Store(cfg.probeops_db_path, telemetry, cfg)
 
         async def recover() -> None:
             while True:
@@ -134,21 +134,25 @@ def create_app(config: Settings | None = None) -> FastAPI:
 
     @app.get("/healthz")
     def health() -> dict[str, str]:
-        return {"status": "ok", "version": __version__}
+        cfg = app.state.store.config
+        return {
+            "status": "ok",
+            "version": __version__,
+            "llm_mode": cfg.llm_mode,
+            "model": cfg.bailian_model if cfg.llm_mode == "bailian" else "FakeLLM-v2",
+        }
 
     @app.get("/api/v1/incidents")
     def incidents() -> dict[str, Any]:
-        return {"items": [INCIDENT]}
+        return {"items": app.state.store.catalog.list()}
 
     @app.get("/api/v1/incidents/{incident_id}")
     def incident(incident_id: IdPath) -> dict[str, Any]:
-        if incident_id != INCIDENT["incident_id"]:
-            raise DomainError(404, "INCIDENT_NOT_FOUND", "任务不存在。")
-        return INCIDENT
+        return app.state.store.catalog.incident(incident_id)  # type: ignore[no-any-return]
 
     @app.get("/api/v1/strategies")
     def strategies() -> dict[str, Any]:
-        return {"items": [STRATEGY]}
+        return {"items": STRATEGIES}
 
     @app.post("/api/v1/runs", status_code=202)
     def create_run(
@@ -194,15 +198,7 @@ def create_app(config: Settings | None = None) -> FastAPI:
 
     @app.get("/api/v1/budget")
     def budget() -> dict[str, Any]:
-        return {
-            "currency": "CNY",
-            "cap_micro_cny": 500000000,
-            "admission_cap_micro_cny": 450000000,
-            "settled_micro_cny": 0,
-            "reserved_micro_cny": 0,
-            "uncertain_micro_cny": 0,
-            "available_micro_cny": 450000000,
-        }
+        return app.state.store.budget()  # type: ignore[no-any-return]
 
     return app
 

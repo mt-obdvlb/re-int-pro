@@ -242,6 +242,9 @@ export interface components {
             /** @enum {string} */
             status: "ok";
             version: string;
+            /** @enum {string} */
+            llm_mode?: "fake" | "bailian";
+            model?: string;
         };
         Incident: {
             incident_id: string;
@@ -339,6 +342,8 @@ export interface components {
                 utility: number;
                 reason: string;
             };
+            /** @description 候选变更事件的完整历史快照，用于回放 */
+            hypotheses?: components["schemas"]["Hypothesis"][];
         };
         Evidence: {
             evidence_id: string;
@@ -376,6 +381,7 @@ export interface components {
             /** @enum {string} */
             currency: "CNY";
             cap_micro_cny: number;
+            /** @description 当前操作限额与450元项目准入上限的较小值 */
             admission_cap_micro_cny: number;
             settled_micro_cny: number;
             reserved_micro_cny: number;

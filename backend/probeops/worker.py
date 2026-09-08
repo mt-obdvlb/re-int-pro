@@ -6,6 +6,7 @@ from opentelemetry import trace
 
 from .agent import diagnose
 from .config import settings
+from .engine import diagnose_snapshot
 from .models import DomainError
 from .storage import Store, uid
 from .telemetry import Telemetry, log, remote_context
@@ -33,14 +34,36 @@ async def execute(store: Store, owner: str, delay: float) -> bool:
         dataset_version=run["dataset_version"],
         config_hash=run["config_hash"],
     ):
-        task = asyncio.create_task(diagnose(store, run, owner, delay))
+        workflow = diagnose if run["model"] == "FakeLLM-v1" else diagnose_snapshot
+        task = asyncio.create_task(workflow(store, run, owner, delay))
         pulse = asyncio.create_task(heartbeat())
+
+        async def cancel_watch() -> None:
+            while not task.done():
+                await asyncio.sleep(0.1)
+                if store.get(run["run_id"])["status"] == "cancel_requested":
+                    task.cancel()
+                    return
+
+        watcher = asyncio.create_task(cancel_watch())
         try:
-            await task
+            await asyncio.wait_for(task, timeout=run["limits"]["max_wall_seconds"])
             log("run_finished", outcome=store.get(run["run_id"])["status"])
+        except TimeoutError:
+            store.advance(
+                run["run_id"],
+                owner,
+                "run_finished",
+                "达到总运行时间上限。",
+                updates={"status": "completed", "stop_reason": "deadline"},
+            )
         except (Exception, asyncio.CancelledError) as exc:
             # Never format provider exceptions; only type and controlled reason.
-            log("worker_failed", error_code=type(exc).__name__, outcome="error")
+            log(
+                "worker_failed",
+                error_code=exc.code if isinstance(exc, DomainError) else type(exc).__name__,
+                outcome="error",
+            )
             trace.get_current_span().set_status(trace.StatusCode.ERROR)
             try:
                 store.advance(
@@ -52,19 +75,27 @@ async def execute(store: Store, owner: str, delay: float) -> bool:
                 )
             except DomainError:
                 log("worker_lease_lost", error_code="LEASE_LOST")
-            if isinstance(exc, asyncio.CancelledError):
+            if (
+                isinstance(exc, asyncio.CancelledError)
+                and store.get(run["run_id"])["status"] != "cancelled"
+            ):
                 raise
         finally:
             pulse.cancel()
             with contextlib.suppress(asyncio.CancelledError):
                 await pulse
+            watcher.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await watcher
     return True
 
 
 async def serve() -> None:
     config = settings()
-    telemetry = Telemetry(config.probeops_telemetry_dir, "worker", config.log_level)
-    store = Store(config.probeops_db_path, telemetry)
+    telemetry = Telemetry(
+        config.probeops_telemetry_dir, "worker", config.log_level, config.otlp_endpoint
+    )
+    store = Store(config.probeops_db_path, telemetry, config)
     owner = uid("worker")
     stop = asyncio.Event()
     loop = asyncio.get_running_loop()

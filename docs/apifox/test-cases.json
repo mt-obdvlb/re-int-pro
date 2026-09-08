@@ -1,6 +1,6 @@
 {
-  "status": "design",
-  "description": "用例设计源，operation_id需绑定Apifox生成的真实endpointId；非可直接导入的CLI payload。API-05在运行时生成case_nonce。",
+  "status": "implemented",
+  "description": "Apifox CLI维护后的设计快照；不是直接导入payload。正向运行用例使用fixture_run_id，先用FakeLLM完成连接池任务。",
   "cases": [
     {
       "case_key": "API-01",
@@ -82,7 +82,7 @@
           "subject": "responseJson",
           "comparison": "equal",
           "path": "$.code",
-          "value": "NOT_FOUND"
+          "value": "INCIDENT_NOT_FOUND"
         }
       ]
     },
@@ -125,7 +125,7 @@
         }
       },
       "body": {
-        "incident_id": "demo_001",
+        "incident_id": "inc_1875fd2c391740aa",
         "strategy_id": "competitive_cost",
         "limits": {
           "max_steps": 12,
@@ -320,7 +320,7 @@
           "subject": "responseJson",
           "comparison": "equal",
           "path": "$.code",
-          "value": "NOT_FOUND"
+          "value": "RUN_NOT_FOUND"
         }
       ]
     },
@@ -350,7 +350,7 @@
           "subject": "responseJson",
           "comparison": "equal",
           "path": "$.code",
-          "value": "NOT_FOUND"
+          "value": "RUN_NOT_FOUND"
         }
       ]
     },
@@ -408,7 +408,7 @@
           "subject": "responseJson",
           "comparison": "equal",
           "path": "$.code",
-          "value": "NOT_FOUND"
+          "value": "RUN_NOT_FOUND"
         }
       ]
     },
@@ -436,7 +436,7 @@
           "subject": "responseJson",
           "comparison": "equal",
           "path": "$.code",
-          "value": "NOT_FOUND"
+          "value": "RUN_NOT_FOUND"
         }
       ]
     },
@@ -472,9 +472,193 @@
         },
         {
           "subject": "responseJson",
-          "comparison": "equal",
+          "comparison": "isAtMost",
           "path": "$.admission_cap_micro_cny",
           "value": "450000000"
+        }
+      ]
+    },
+    {
+      "case_key": "API-16",
+      "operation_id": "getIncident",
+      "name": "API-16 读取真实快照任务",
+      "category": "正向",
+      "parameters": {
+        "path": [
+          {
+            "id": "path_run_id",
+            "name": "incident_id",
+            "value": "inc_1875fd2c391740aa",
+            "type": "string",
+            "enable": true
+          }
+        ],
+        "query": [],
+        "header": [],
+        "cookie": []
+      },
+      "body": null,
+      "assertions": [
+        {
+          "name": "读取真实快照任务 0",
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "200"
+        },
+        {
+          "name": "读取真实快照任务 1",
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.incident_id",
+          "value": "inc_1875fd2c391740aa"
+        }
+      ]
+    },
+    {
+      "case_key": "API-17",
+      "operation_id": "getRun",
+      "name": "API-17 读取完成运行",
+      "category": "正向",
+      "parameters": {
+        "path": [
+          {
+            "id": "path_run_id",
+            "name": "run_id",
+            "value": "{{fixture_run_id}}",
+            "type": "string",
+            "enable": true
+          }
+        ],
+        "query": [],
+        "header": [],
+        "cookie": []
+      },
+      "body": null,
+      "assertions": [
+        {
+          "name": "读取完成运行 0",
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "200"
+        },
+        {
+          "name": "读取完成运行 1",
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.status",
+          "value": "completed"
+        }
+      ]
+    },
+    {
+      "case_key": "API-18",
+      "operation_id": "listEvents",
+      "name": "API-18 读取诊断事件",
+      "category": "正向",
+      "parameters": {
+        "path": [
+          {
+            "id": "path_run_id",
+            "name": "run_id",
+            "value": "{{fixture_run_id}}",
+            "type": "string",
+            "enable": true
+          }
+        ],
+        "query": [],
+        "header": [],
+        "cookie": []
+      },
+      "body": null,
+      "assertions": [
+        {
+          "name": "读取诊断事件 0",
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "200"
+        },
+        {
+          "name": "读取诊断事件 1",
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.items[0].kind",
+          "value": "run_created"
+        }
+      ]
+    },
+    {
+      "case_key": "API-19",
+      "operation_id": "listEvidences",
+      "name": "API-19 读取实际证据",
+      "category": "正向",
+      "parameters": {
+        "path": [
+          {
+            "id": "path_run_id",
+            "name": "run_id",
+            "value": "{{fixture_run_id}}",
+            "type": "string",
+            "enable": true
+          }
+        ],
+        "query": [],
+        "header": [],
+        "cookie": []
+      },
+      "body": null,
+      "assertions": [
+        {
+          "name": "读取实际证据 0",
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "200"
+        },
+        {
+          "name": "读取实际证据 1",
+          "subject": "responseJson",
+          "comparison": "exists",
+          "path": "$.items[0].evidence_id"
+        }
+      ]
+    },
+    {
+      "case_key": "API-20",
+      "operation_id": "getReport",
+      "name": "API-20 读取定位报告",
+      "category": "正向",
+      "parameters": {
+        "path": [
+          {
+            "id": "path_run_id",
+            "name": "run_id",
+            "value": "{{fixture_run_id}}",
+            "type": "string",
+            "enable": true
+          }
+        ],
+        "query": [],
+        "header": [],
+        "cookie": []
+      },
+      "body": null,
+      "assertions": [
+        {
+          "name": "读取定位报告 0",
+          "subject": "httpCode",
+          "comparison": "equal",
+          "path": "",
+          "value": "200"
+        },
+        {
+          "name": "读取定位报告 1",
+          "subject": "responseJson",
+          "comparison": "equal",
+          "path": "$.conclusion",
+          "value": "located"
         }
       ]
     }

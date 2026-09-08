@@ -2,8 +2,8 @@
   "openapi": "3.0.3",
   "info": {
     "title": "ProbeOps 诊断 Agent API",
-    "version": "0.1.0",
-    "description": "T1 接口契约。P1 已实现本机 FakeLLM 基础链路，仅 fixed 策略可运行；其他策略创建返回 503 STRATEGY_UNAVAILABLE。模拟结果不构成真实根因判断。Agent 无写入或注入故障工具。Apifox project=8800905，main，Git Spec 模式，以本文件为契约源。"
+    "version": "0.2.0",
+    "description": "ProbeOps 本地诊断工作台：只读冻结观测、六策略、百炼与持久化成本。"
   },
   "servers": [
     {
@@ -1173,6 +1173,16 @@
           },
           "version": {
             "type": "string"
+          },
+          "llm_mode": {
+            "type": "string",
+            "enum": [
+              "fake",
+              "bailian"
+            ]
+          },
+          "model": {
+            "type": "string"
           }
         },
         "required": [
@@ -1626,6 +1636,13 @@
                 "maxLength": 2000
               }
             }
+          },
+          "hypotheses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Hypothesis"
+            },
+            "description": "候选变更事件的完整历史快照，用于回放"
           }
         },
         "required": [
@@ -1794,7 +1811,8 @@
           },
           "admission_cap_micro_cny": {
             "type": "integer",
-            "minimum": 0
+            "minimum": 0,
+            "description": "当前操作限额与450元项目准入上限的较小值"
           },
           "settled_micro_cny": {
             "type": "integer",

@@ -1,33 +1,21 @@
-# Apifox 设计资产与同步记录
+# Apifox维护与真实回归
 
-项目 `re-int-pro` / 8800905，main / 8592769；CLI 2.2.9；核查日期2026-09-05。
+2026-09-08，CLI2.2.9，沿用re-int-pro项目8800905/main、环境48818912。Git Spec源为 [OpenAPI](../api/openapi.json)，不直接改生成接口、不新建同名项目。
 
-2026-09-06收尾复核：`test-case list` 返回15项。`project get` 的统计摘要仍显示接口/用例0，未能反映本次Spec生成接口与单接口用例；本记录的数量依据专用endpoint/test-case list、逐项get和OpenAPI导出，不使用项目摘要推断资源不存在。
+现有12个操作、19个数据模型；20个接口测试用例均经过schema校验、写入及CLI回读，真实本地runner共20请求、45断言，0失败。原始报告留在.runtime/apifox，不上传；[资源索引](resource-index.json)保留逐项路径与SHA256。[用例快照](test-cases.json)是设计记录，不是直接导入payload。
 
-现有项目是Git托管Spec模式，连接2190指向 `mt-obdvlb/re-int-pro`。契约源为 [docs/api/openapi.json](../api/openapi.json)。直接CLI导入曾保存19个数据模型和1个本地环境但未生成接口；直接endpoint创建404。已查明应通过Git同步Spec，未创建替代项目、未更改权限。
+真实回归曾发现旧错误码预期NOT_FOUND与实现细分不符、操作限额不应固定等于450元，以及新增用例复制模板后路径未更新、事件没有run_id字段。现已校正并重跑；旧失败报告保留。服务启动前/重启中产生的连接失败也保留，最终结果来自ready后执行。
 
-契约提交 `4a302a6` 推送后，现有 Git 同步生成 **12 个操作、19 个模型**。已通过 CLI 建立 **15 个独立 API 测试用例**；每个都经过 schema validate 和 get 回读，验证绑定ID、分类、正文、参数、前置脚本（如有）及断言。实际费用为本轮模型调用0元。
-
-- [资源映射](resource-index.json)：12个endpoint ID、15个case ID和逐项验证状态。
-- [用例设计快照](test-cases.json)：按operationId记录输入/预期，便于评审；不是直接导入的CLI payload。后续用例在Apifox维护后同步此快照，不能在两处独立修改。
-- 将Apifox导出与仓库源规范化对照：19模型一致；12操作的方法/路径/operationId/参数required与schema/请求体/响应状态与schema一致。忽略UI扩展和描述性字段。
-
-P0 时15个用例均未运行。P1 已启动真实 FastAPI 后端，并执行 API-01（411147565）：1次HTTP请求、3条断言、0失败；最终请求耗时13ms只是单次观测，不是性能基准。环境48818912指向127.0.0.1:8000，名称经CLI schema validate→update→get改为“本地开发后端（P1 FakeLLM）”。原始报告 `.runtime/apifox/p1-health-final.json` 仅本地保存，没有上传云端。其余14个用例仍未运行，API-16～24完整业务场景留到P3/P4。无空场景/空套件。
+先启动FakeLLM后端和worker。执行API-05创建真实快照任务，再从输出中取得run_id，等到completed后将其作为fixture运行17–20；示例：
 
 ```bash
-apifox run --project 8800905 --branch main --test-case 411147565 --environment 48818912 --reporters cli,json --out-dir .runtime/apifox --out-file p1-health-final --upload-report false
+apifox run --project 8800905 --branch main --test-case 411147578 --environment 48818912 --reporters cli,json --out-dir .runtime/apifox --out-file create-fixture --upload-report false
+# FIXTURE_RUN_ID 取自上一步真实返回，等待completed；不得用不存在的占位ID
+apifox run --project 8800905 --branch main --test-case 411733979 --environment 48818912 --env-var "fixture_run_id=$FIXTURE_RUN_ID" --reporters cli,json --out-dir .runtime/apifox --out-file report-fixture --upload-report false
 ```
 
-Spec解析默认将接口显示为released，源文件已补`x-apifox-status: developing`，以表达待开发状态。该标签仅为设计工作状态，不能代替运行验收。
+维护流程：help→cli-schema get→get原资源/真实category→完整payload→validate→create/update→get回读→runner。category正向13341829、负向13341830；参数与绑定endpoint ID见索引。CLI创建输出可能含提示文本，不能盲目当纯JSON解析；不确定写入结果先list确认，避免重复创建。
 
-## 可复查命令
+[官方CLI文档](https://docs.apifox.com/apifox-cli) 于2026-09-07核对。升级后以安装版本help/schema为准；令牌不写入命令参数、仓库或环境导出。项目总览计数曾不反映Spec资源，以专用endpoint/test-case list和回读为准。
 
-```bash
-apifox endpoint list --project 8800905 --branch main --page-size 100
-apifox test-case category --project 8800905
-# ENDPOINT_ID 来自实际list；不要猜ID
-apifox test-case list --project 8800905 --branch main --endpoint "$ENDPOINT_ID"
-apifox export --project 8800905 --branch main --format openapi --output /tmp/probeops-apifox-openapi.json
-```
-
-更多工作流见 [API契约](../api-contract.md)；覆盖计划见 [测试矩阵](../testing.md)。请求/响应必须包含实际断言，不用空场景或空套件代替测试资产。
+变更Spec后提交推送，再export核对新增可选字段和12操作。不能用源规范与自己返回的/openapi.json相等代替后端响应验收。历史P0/P1仅health通过的记录已被本轮20用例真实回归更新。

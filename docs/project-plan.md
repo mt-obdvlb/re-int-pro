@@ -1,13 +1,12 @@
 # 项目阶段记录
 
-## 当前状态
+## 当前状态（2026-09-08）
 
-- 选题：用户于2026-09-05明确选择T1“基于竞争假设与探测成本的故障诊断 Agent”。
-- 当前：P0 已完成，用户明确授权 P1 真正搭建；本轮交付 FakeLLM 可运行基础，验收后才进入 P2。
-- 用户确定：React方向前端、FastAPI后端、纯Python Agent不使用框架、完整logging/tracing、Apifox CLI维护接口和测试、百炼API（变量BAILIAN_API）。
-- 规划具体化：React/TypeScript/Vite、独立worker、SQLite、OTel、四工具快照诊断，见[架构](architecture.md)。
-- 约束：150–300小时，总API≤500元；计划目标280小时、预算包络383.712元，详见[实施计划](implementation-plan.md)与[实验预算](evaluation-plan.md)。
-- 下一步：按 [P1 验收记录](p1-validation.md) 验收；等待用户明确批准 P2 环境与观测。
+用户已选择T1 ProbeOps，并于2026-09-07明确改为分模块直接完成完整版本。当前授权覆盖模块实现、联调与统一验收，P1–P6只保留为历史工作分解，不再逐关请求批准。
+
+观测环境、核心Agent、百炼与费用、工作台/API、评测脚本与文档已实现。验收证据见 [完整记录](full-validation.md)，实际范围见 [模块交付](module-delivery.md)。真实调用累计估算0.065529元，默认操作上限1元；未执行百炼正式六策略主实验，不能声称机制提升。技术栈React/TypeScript/Vite、FastAPI、纯Python Agent、logging/tracing、Apifox保持不变。
+
+下文是历史阶段记录，其中当时的逐关批准条款已被上述用户指令替代。
 
 ## 第 1 步：初始化
 

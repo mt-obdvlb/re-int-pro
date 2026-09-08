@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router-dom'
 import { ArrowRight, Clock, Flask, Plus, Stack, Tray } from '@phosphor-icons/react'
-import { api, defaultLimits, terminal, type Run } from './api'
+import { api, defaultLimits, terminal, money, strategyNames, type Run } from './api'
 import { Status, ErrorNotice } from './Status'
 import { CreateRunDialog } from './CreateRunDialog'
 import { RunDetail } from './RunDetail'
@@ -14,6 +14,9 @@ export function Workspace({ history = false }: { history?: boolean }) {
   const client = useQueryClient()
   const selected = search.get('run') ?? ''
   const incidents = useQuery({ queryKey: ['incidents'], queryFn: api.incidents })
+  const strategies = useQuery({ queryKey: ['strategies'], queryFn: api.strategies })
+  const health = useQuery({ queryKey: ['health'], queryFn: api.health })
+  const budget = useQuery({ queryKey: ['budget'], queryFn: api.budget, refetchInterval: 3000 })
   const runs = useInfiniteQuery({
     queryKey: ['runs'],
     queryFn: ({ pageParam }) => api.runs(pageParam),
@@ -32,7 +35,10 @@ export function Workspace({ history = false }: { history?: boolean }) {
     (run) => filter === 'all' || (filter === 'active' ? !terminal(run) : terminal(run)),
   )
   const limits = selectedRun.data?.limits ?? defaultLimits
-  const incident = incidents.data?.items[0]
+  const incident =
+    incidents.data?.items.find((i) => i.incident_id === selectedRun.data?.incident_id) ??
+    incidents.data?.items.find((i) => i.incident_id !== 'demo_latency') ??
+    incidents.data?.items[0]
   async function created(run: Run) {
     setCreating(false)
     setSearch({ run: run.run_id })
@@ -45,7 +51,11 @@ export function Workspace({ history = false }: { history?: boolean }) {
           <h1>{history ? '运行记录' : '诊断工作台'}</h1>
           <p>从告警出发，检查假设与证据。</p>
         </div>
-        <button className="primary" disabled={!incident} onClick={() => setCreating(true)}>
+        <button
+          className="primary"
+          disabled={!incident || !strategies.data}
+          onClick={() => setCreating(true)}
+        >
           <Plus size={18} />
           新建运行
         </button>
@@ -58,21 +68,33 @@ export function Workspace({ history = false }: { history?: boolean }) {
           }}
         />
       )}
-      <section className="incident-context" aria-label="演示任务">
+      {strategies.error && (
+        <ErrorNotice
+          error={strategies.error}
+          retry={() => {
+            void strategies.refetch()
+          }}
+        />
+      )}
+      <section className="incident-context" aria-label="观测任务">
         <h2>{incident?.title ?? '正在读取任务…'}</h2>
         <div className="context-line">
-          <span className="badge">演示任务</span>
+          <span className="badge">
+            {incident?.dataset_version === 'p1-synthetic-v1' ? '历史演示' : '冻结观测'}
+          </span>
           <span>
             <Stack size={17} />
             {incident?.service ?? '—'}
           </span>
           <span>
             <Clock size={17} />
-            09:40–09:45
+            {incident
+              ? `${new Date(incident.window_start).toLocaleTimeString('zh-CN')}–${new Date(incident.window_end).toLocaleTimeString('zh-CN')}`
+              : '—'}
           </span>
           <span>
             <Flask size={17} />
-            {incident?.alert ?? '模拟数据，用于验证运行流程。'}
+            {incident?.alert ?? '正在读取观测窗口。'}
           </span>
         </div>
       </section>
@@ -81,7 +103,7 @@ export function Workspace({ history = false }: { history?: boolean }) {
           <section aria-labelledby="runs-heading">
             <div className="section-heading">
               <h2 id="runs-heading">运行记录</h2>
-              <span className="muted small">模拟数据</span>
+              <span className="muted small">{incidents.data?.items.length ?? 0} 个可用任务</span>
             </div>
             <div className="filters" aria-label="筛选运行">
               {[
@@ -143,9 +165,13 @@ export function Workspace({ history = false }: { history?: boolean }) {
                         <td>
                           <Status status={run.status} />
                         </td>
-                        <td>固定流程演示</td>
+                        <td>{strategyNames[run.strategy_id] ?? run.strategy_id}</td>
                         <td className="number">
-                          ¥{(run.usage.settled_micro_cny / 1000000).toFixed(2)}
+                          {money(
+                            run.usage.settled_micro_cny +
+                              run.usage.uncertain_micro_cny +
+                              run.usage.reserved_micro_cny,
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -160,7 +186,7 @@ export function Workspace({ history = false }: { history?: boolean }) {
                   <p>
                     {items.length
                       ? '切换筛选条件，查看其他运行。'
-                      : '新建一次模拟运行，查看任务从创建到完成的过程。'}
+                      : '选择一份观测快照，查看候选、探测决策与报告。'}
                   </p>
                   {!items.length && (
                     <button
@@ -203,7 +229,7 @@ export function Workspace({ history = false }: { history?: boolean }) {
           <dl>
             <dt>运行模式</dt>
             <dd>
-              <code>FakeLLM</code>
+              <code>{selectedRun.data?.model ?? health.data?.model ?? '—'}</code>
             </dd>
             <dt>探测上限</dt>
             <dd>{limits.max_steps} 次</dd>
@@ -212,11 +238,27 @@ export function Workspace({ history = false }: { history?: boolean }) {
             <dt>时间上限</dt>
             <dd>{limits.max_wall_seconds} 秒</dd>
           </dl>
-          <p>P1 验证基础链路，暂不提供真实根因判断。</p>
+          <h2>费用账本</h2>
+          {budget.error && <ErrorNotice error={budget.error} />}
+          <dl>
+            <dt>已结算</dt>
+            <dd>{money(budget.data?.settled_micro_cny ?? 0)}</dd>
+            <dt>预留 / 未确认</dt>
+            <dd>
+              {money(budget.data?.reserved_micro_cny ?? 0)} /{' '}
+              {money(budget.data?.uncertain_micro_cny ?? 0)}
+            </dd>
+            <dt>剩余可用</dt>
+            <dd>{budget.data ? money(budget.data.available_micro_cny) : '—'}</dd>
+          </dl>
+          <p>分数表示证据支持，不是概率。达到流程终态不等于成功定位。</p>
         </aside>
       </div>
       {creating && (
         <CreateRunDialog
+          incidents={incidents.data?.items ?? []}
+          strategies={strategies.data?.items ?? []}
+          model={health.data?.model ?? 'FakeLLM-v2'}
           onClose={() => setCreating(false)}
           onCreated={(run) => {
             void created(run)

@@ -2,7 +2,7 @@
   "project_id": 8800905,
   "branch": "main",
   "cli_version": "2.2.9",
-  "verified_date": "2026-09-06",
+  "verified_date": "2026-09-08",
   "cases": [
     {
       "case_key": "API-01",
@@ -12,12 +12,13 @@
       "assertions": 3,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "passed_local_backend_2026-09-06",
+      "execution": "passed_local_backend_2026-09-08",
       "execution_evidence": {
         "requests": 1,
         "assertions": 3,
         "failed_assertions": 0,
-        "report": ".runtime/apifox/p1-health-final.json",
+        "report": ".runtime/apifox/verified-ready-API-01.json",
+        "sha256": "287b3c2f3c32c1556503c06a2eb0441307a3d8f8b8424328a2a066074dc1ba7d",
         "uploaded": false
       }
     },
@@ -29,7 +30,15 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_in_p1"
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/verified-API-02.json",
+        "sha256": "4ec44edd4c5582589ac4715ec3d7d4c41bbba0bc77a689c5975a82e68c3726b9",
+        "uploaded": false
+      }
     },
     {
       "case_key": "API-03",
@@ -39,7 +48,15 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_in_p1"
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/verified-API-03.json",
+        "sha256": "a8850e10c9838f3982499583ef7be46b8e9ac2b5088e0da4b0af38b2d4040067",
+        "uploaded": false
+      }
     },
     {
       "case_key": "API-04",
@@ -49,7 +66,15 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_in_p1"
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/verified-API-04.json",
+        "sha256": "d636f30aa4aeda10002c6aa94c39551de8e8786cf49a31880127f641299ecddb",
+        "uploaded": false
+      }
     },
     {
       "case_key": "API-05",
@@ -59,7 +84,15 @@
       "assertions": 3,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_in_p1"
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 3,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/verified-API-05.json",
+        "sha256": "f5129999777e80241dd29a7705115567bfffd76f699e2e4988abd9d033e65948",
+        "uploaded": false
+      }
     },
     {
       "case_key": "API-06",
@@ -69,7 +102,15 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_in_p1"
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/verified-API-06.json",
+        "sha256": "3374457a23155eb839aa4ce2ed59376014e6b2b3ac37f8ad176711e0e717c2f7",
+        "uploaded": false
+      }
     },
     {
       "case_key": "API-07",
@@ -79,7 +120,15 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_in_p1"
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/verified-API-07.json",
+        "sha256": "c2f6a69a440ae41a7ca2562d5526e487fc2b7e7155da84986961c9ae6350d85d",
+        "uploaded": false
+      }
     },
     {
       "case_key": "API-08",
@@ -89,7 +138,15 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_in_p1"
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/verified-API-08.json",
+        "sha256": "b12067d2ccf452cc1d9124f2f971138bb5eecccd2b39b7419918e5c56290731f",
+        "uploaded": false
+      }
     },
     {
       "case_key": "API-09",
@@ -99,7 +156,15 @@
       "assertions": 3,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_in_p1"
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 3,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/verified-API-09.json",
+        "sha256": "9bfd8b6fd2e96ae965465edcc9700c648dd8ac2186f92698cc6f1e802feaefce",
+        "uploaded": false
+      }
     },
     {
       "case_key": "API-10",
@@ -109,7 +174,15 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_in_p1"
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/verified-API-10.json",
+        "sha256": "5d3a8ca66eef2d765f2050499fa9fda797121159bdfa1e6428cd40b95180b13d",
+        "uploaded": false
+      }
     },
     {
       "case_key": "API-11",
@@ -119,7 +192,15 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_in_p1"
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/verified-API-11.json",
+        "sha256": "9f250eca6fbf27c8d87014842589a350e0b8e9f713cf3616996bdc05f9160b42",
+        "uploaded": false
+      }
     },
     {
       "case_key": "API-12",
@@ -129,7 +210,15 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_in_p1"
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/verified-API-12.json",
+        "sha256": "934fabba9f88cae7164d62112c3f98834e6026190ab5671861341985330c853f",
+        "uploaded": false
+      }
     },
     {
       "case_key": "API-13",
@@ -139,7 +228,15 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_in_p1"
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/verified-API-13.json",
+        "sha256": "b387e17464e16a7b6f7b76859d437eee371cd8bbd5bd070c0ec9f7623f11983e",
+        "uploaded": false
+      }
     },
     {
       "case_key": "API-14",
@@ -149,7 +246,15 @@
       "assertions": 2,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_in_p1"
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/verified-API-14.json",
+        "sha256": "796db352ef278db6d819df7fc2562f5282a70acb2423ef11714e1a2be2cd78e7",
+        "uploaded": false
+      }
     },
     {
       "case_key": "API-15",
@@ -159,12 +264,109 @@
       "assertions": 4,
       "schema_validated": true,
       "readback_verified": true,
-      "execution": "not_run_in_p1"
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 4,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/verified-API-15.json",
+        "sha256": "1d4732ef049f75b2c742eb3d8adb1b01e97b150f019853f99d8c28f6e6b5ba4d",
+        "uploaded": false
+      }
+    },
+    {
+      "case_key": "API-16",
+      "case_id": 411733762,
+      "endpoint_id": 511261551,
+      "name": "API-16 读取真实快照任务",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/final-API-16.json",
+        "sha256": "66f6a62bd3ed56e94858e828044d9ff7aef08b69ef2ddaad897c96d5242e0bae",
+        "uploaded": false
+      }
+    },
+    {
+      "case_key": "API-17",
+      "case_id": 411733890,
+      "endpoint_id": 511261555,
+      "name": "API-17 读取完成运行",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/final-API-17.json",
+        "sha256": "c28a471a8508f5a60a2811a2738db15f598402c427abad8d72914e1f0acc8134",
+        "uploaded": false
+      }
+    },
+    {
+      "case_key": "API-18",
+      "case_id": 411733896,
+      "endpoint_id": 511261557,
+      "name": "API-18 读取诊断事件",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/final-ready-API-18.json",
+        "sha256": "1274a92b672b76baf72706b4cad73d4207ed2dcee2d5fbef3bd9de8e27dbb52d",
+        "uploaded": false
+      }
+    },
+    {
+      "case_key": "API-19",
+      "case_id": 411733961,
+      "endpoint_id": 511261558,
+      "name": "API-19 读取实际证据",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/final-API-19.json",
+        "sha256": "f5ee87de23662cdd9a1c3a7c966b5e5e580146dff7a552c65c8705928f38d95e",
+        "uploaded": false
+      }
+    },
+    {
+      "case_key": "API-20",
+      "case_id": 411733979,
+      "endpoint_id": 511261559,
+      "name": "API-20 读取定位报告",
+      "assertions": 2,
+      "schema_validated": true,
+      "readback_verified": true,
+      "execution": "passed_local_backend_2026-09-08",
+      "execution_evidence": {
+        "requests": 1,
+        "assertions": 2,
+        "failed_assertions": 0,
+        "report": ".runtime/apifox/final-API-20.json",
+        "sha256": "45ae1f39324560e369fff4eef5f9ddd1bbccd082e06cf9fb8849617a4f4f0b92",
+        "uploaded": false
+      }
     }
   ],
   "contract_source": "docs/api/openapi.json",
-  "contract_commit": "4a302a68f621f0a29b06c05e0f7dc749fe9409ee",
-  "backend_tests_executed": false,
+  "backend_tests_executed": true,
   "endpoints": [
     {
       "endpoint_id": 511260338,
@@ -239,5 +441,6 @@
       "operation_id": "cancelRun"
     }
   ],
-  "local_environment_id": 48818912
+  "local_environment_id": 48818912,
+  "contract_note": "Git Spec新增Health模式与Event候选历史，推送后核对远端。"
 }

@@ -1,0 +1,62 @@
+{
+  "date": "2026-09-08",
+  "kind": "engineering-validation-not-main-experiment",
+  "batches": [
+    {
+      "name": "benchmark-fake",
+      "mode": "fake",
+      "model": "FakeLLM-v2",
+      "trials": 1080,
+      "system_failures": 0,
+      "known_trials": 864,
+      "known_correct": 864,
+      "negative_trials": 216,
+      "negative_false_locations": 0,
+      "cost_micro_cny": 0,
+      "local_source": ".runtime/evaluator/benchmark-fake.jsonl",
+      "sha256": "764e5b9026e99552153aa608b78dc2684caf02ef3f5e47ac401a55de7b24304f"
+    },
+    {
+      "name": "bailian-smoke-v1",
+      "mode": "bailian",
+      "model": "qwen-plus-2025-12-01",
+      "trials": 1,
+      "system_failures": 0,
+      "known_trials": 1,
+      "known_correct": 0,
+      "negative_trials": 0,
+      "negative_false_locations": 0,
+      "cost_micro_cny": 993,
+      "local_source": ".runtime/evaluator/bailian-smoke-v1.jsonl",
+      "sha256": "26c66cffd06ce1d6874f99595837cec672c7931f379ec2e0d3ad7960323993c2"
+    },
+    {
+      "name": "bailian-smoke-v2",
+      "mode": "bailian",
+      "model": "qwen-plus-2025-12-01",
+      "trials": 1,
+      "system_failures": 0,
+      "known_trials": 1,
+      "known_correct": 1,
+      "negative_trials": 0,
+      "negative_false_locations": 0,
+      "cost_micro_cny": 5622,
+      "local_source": ".runtime/evaluator/bailian-smoke-v2.jsonl",
+      "sha256": "76f6e2a11cf19b22c09480d9787b2d1f5e6a63e346fa79e996e6bc6cd547a8fd"
+    },
+    {
+      "name": "bailian-dev-check",
+      "mode": "bailian",
+      "model": "qwen-plus-2025-12-01",
+      "trials": 20,
+      "system_failures": 0,
+      "known_trials": 16,
+      "known_correct": 13,
+      "negative_trials": 4,
+      "negative_false_locations": 0,
+      "cost_micro_cny": 58914,
+      "local_source": ".runtime/evaluator/bailian-dev-check.jsonl",
+      "sha256": "748ead94f547770c926afd8f4ea0f24a3c2420efe33930b7ad3c17aac16a01de"
+    }
+  ]
+}

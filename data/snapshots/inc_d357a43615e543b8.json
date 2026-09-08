@@ -1,0 +1,30 @@
+{
+  "incident": {
+    "incident_id": "inc_d357a43615e543b8",
+    "title": "结算服务异常检查",
+    "alert": "检查本次结算窗口的响应、任务处理与配置是否异常。",
+    "service": "checkout-api",
+    "window_start": "2026-09-07T23:59:18.580453Z",
+    "window_end": "2026-09-07T23:59:19.652046Z",
+    "dataset_version": "lab-v1"
+  },
+  "graph": {
+    "checkout-api": [
+      "cache",
+      "database",
+      "task-worker"
+    ],
+    "task-worker": [
+      "database"
+    ]
+  },
+  "metrics": {},
+  "logs": {},
+  "traces": [],
+  "config": {},
+  "provenance": {
+    "kind": "captured-local-services",
+    "requests": 48
+  },
+  "content_hash": "7eb899bbfc9bbfaab3a5b43c1cd60d5b366e4a184f03b517482d9d599b6e22eb"
+}

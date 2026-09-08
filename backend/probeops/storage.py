@@ -10,7 +10,9 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
+from .config import Settings
 from .models import INCIDENT, TERMINAL, CreateRun, DomainError
+from .observations import PROBES, SnapshotCatalog
 from .telemetry import Telemetry, now, remote_context, span_id
 
 Json = dict[str, Any]
@@ -22,13 +24,15 @@ def uid(prefix: str) -> str:
 
 
 class Store:
-    def __init__(self, path: Path, telemetry: Telemetry):
+    def __init__(self, path: Path, telemetry: Telemetry, config: Settings | None = None):
         self.path, self.telemetry = path, telemetry
+        self.config = config or Settings(_env_file=None)  # type: ignore[call-arg]
+        self.catalog = SnapshotCatalog(self.config.probeops_snapshot_dir)
         path.parent.mkdir(parents=True, exist_ok=True)
         with self.connection() as db:
             db.execute("PRAGMA journal_mode=WAL")
             version = db.execute("PRAGMA user_version").fetchone()[0]
-            if version > 1:
+            if version > 2:
                 raise RuntimeError("Unsupported database version")
             db.executescript("""
                 CREATE TABLE IF NOT EXISTS runs (
@@ -41,7 +45,17 @@ class Store:
                 CREATE TABLE IF NOT EXISTS evidence (
                     run_id TEXT NOT NULL REFERENCES runs(id), seq INTEGER NOT NULL,
                     body TEXT NOT NULL, PRIMARY KEY(run_id, seq));
-                PRAGMA user_version=1;
+                CREATE TABLE IF NOT EXISTS run_context (
+                    run_id TEXT PRIMARY KEY REFERENCES runs(id), body TEXT NOT NULL);
+                CREATE TABLE IF NOT EXISTS charges (
+                    id TEXT PRIMARY KEY, run_id TEXT NOT NULL REFERENCES runs(id),
+                    state TEXT NOT NULL, amount INTEGER NOT NULL CHECK(amount>=0),
+                    input_tokens INTEGER NOT NULL DEFAULT 0,
+                    output_tokens INTEGER NOT NULL DEFAULT 0);
+                CREATE TABLE IF NOT EXISTS charge_events (
+                    seq INTEGER PRIMARY KEY AUTOINCREMENT, charge_id TEXT NOT NULL,
+                    state TEXT NOT NULL, amount INTEGER NOT NULL, timestamp TEXT NOT NULL);
+                PRAGMA user_version=2;
             """)
 
     @contextmanager
@@ -78,6 +92,7 @@ class Store:
         kind: str,
         message: str,
         evidence_ids: list[str] | None = None,
+        decision: Json | None = None,
     ) -> None:
         run["last_event_seq"] += 1
         run["version"] += 1
@@ -91,12 +106,18 @@ class Store:
             "hypothesis_ids": [h["hypothesis_id"] for h in run["hypotheses"]],
             "span_id": span_id(),
         }
+        if decision is not None:
+            event["decision"] = decision
+        if kind == "hypotheses_updated":
+            event["hypotheses"] = run["hypotheses"]
         db.execute(
             "INSERT INTO events VALUES(?,?,?)", (run["run_id"], event["seq"], json.dumps(event))
         )
         db.execute("UPDATE runs SET body=? WHERE id=?", (json.dumps(run), run["run_id"]))
 
-    def create(self, body: CreateRun, key: str, trace_id: str, parent_span: str) -> Json:
+    def create(
+        self, body: CreateRun, key: str, trace_id: str, parent_span: str, *, seed: int = 42
+    ) -> Json:
         payload = body.model_dump()
         digest = hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
         with self.transaction() as db:
@@ -107,11 +128,37 @@ class Store:
                 if existing["request_hash"] != digest:
                     raise DomainError(409, "IDEMPOTENCY_CONFLICT", "同一幂等键对应了不同请求。")
                 return json.loads(existing["body"])  # type: ignore[no-any-return]
-            if body.incident_id != INCIDENT["incident_id"]:
-                raise DomainError(404, "INCIDENT_NOT_FOUND", "任务不存在。")
-            if body.strategy_id != "fixed":
-                raise DomainError(503, "STRATEGY_UNAVAILABLE", "P1 仅提供固定流程演示。")
-            # Bounded local queue; no model calls or fee reservations in P1.
+            incident = self.catalog.incident(body.incident_id)
+            demo = body.incident_id == INCIDENT["incident_id"]
+            if demo and body.strategy_id != "fixed":
+                raise DomainError(503, "STRATEGY_UNAVAILABLE", "历史演示快照仅用于固定流程。")
+            mode = "fake" if demo else self.config.llm_mode
+            if mode == "bailian" and not self.config.bailian_api.get_secret_value():
+                raise DomainError(503, "PROVIDER_UNAVAILABLE", "百炼服务端密钥尚未配置。")
+            frozen = {
+                "mode": mode,
+                "policy_version": "competitive-v2",
+                "prompt_version": "proposal-v2",
+                "seed": seed,
+                "model": self.config.bailian_model if mode == "bailian" else "FakeLLM-v2",
+                "snapshot": None if demo else self.catalog.load(body.incident_id),
+                "tools": [p.model_dump() for p in PROBES],
+                "costs": {p.probe_id: p.cost for p in PROBES},
+                "price_micro_cny_per_million": {"input": 800000, "output": 2000000},
+            }
+            cost_path = self.config.probeops_snapshot_dir.parent / "costs.json"
+            if cost_path.is_file():
+                import math
+
+                calibration = json.loads(cost_path.read_text())
+                costs = calibration["costs"]
+                if set(costs) != {p.probe_id for p in PROBES} or any(
+                    not isinstance(c, (int, float)) or not math.isfinite(c) or c < 0.1
+                    for c in costs.values()
+                ):
+                    raise DomainError(503, "CALIBRATION_INVALID", "成本标定无效。")
+                frozen["costs"] = costs
+                frozen["calibration"] = calibration
             count = db.execute(
                 "SELECT count(*) FROM runs WHERE json_extract(body,'$.status') "
                 "IN ('queued','running','cancel_requested')"
@@ -143,14 +190,17 @@ class Store:
                 "hypotheses": [],
                 "last_event_seq": 0,
                 "stop_reason": "none",
-                "model": "FakeLLM-v1",
-                "config_hash": digest,
-                "dataset_version": INCIDENT["dataset_version"],
+                "model": "FakeLLM-v1" if demo else frozen["model"],
+                "config_hash": hashlib.sha256(
+                    json.dumps(frozen, sort_keys=True).encode()
+                ).hexdigest(),
+                "dataset_version": incident["dataset_version"],
             }
             db.execute(
                 "INSERT INTO runs VALUES(?,?,?,?,?,NULL,NULL,?)",
                 (run["run_id"], json.dumps(run), digest, key, parent_span, ordinal),
             )
+            db.execute("INSERT INTO run_context VALUES(?,?)", (run["run_id"], json.dumps(frozen)))
             self._event(db, run, "run_created", "接收任务，等待本地 worker。")
             return run
 
@@ -208,6 +258,7 @@ class Store:
             for row in rows:
                 run = self._get(db, row["id"])
                 if run["status"] not in TERMINAL:
+                    self._uncertain(db, run)
                     run.update(status="failed", stop_reason="worker_lost")
                     self._event(db, run, "run_finished", "worker 租约失效；不会重放任务。")
                 db.execute("UPDATE runs SET owner=NULL,lease_until=NULL WHERE id=?", (row["id"],))
@@ -256,6 +307,7 @@ class Store:
         *,
         updates: Json | None = None,
         evidence: Json | None = None,
+        decision: Json | None = None,
     ) -> Json:
         with self.transaction() as db:
             row = db.execute("SELECT owner,lease_until FROM runs WHERE id=?", (run_id,)).fetchone()
@@ -276,8 +328,12 @@ class Store:
                     "INSERT INTO evidence VALUES(?,?,?)",
                     (run_id, evidence["seq"], json.dumps(evidence)),
                 )
-            self._event(db, run, kind, message, [evidence["evidence_id"]] if evidence else [])
+            self._event(
+                db, run, kind, message, [evidence["evidence_id"]] if evidence else [], decision
+            )
             if run["status"] in TERMINAL:
+                self._uncertain(db, run)
+                db.execute("UPDATE runs SET body=? WHERE id=?", (json.dumps(run), run_id))
                 db.execute("UPDATE runs SET owner=NULL,lease_until=NULL WHERE id=?", (run_id,))
             return run
 
@@ -286,15 +342,157 @@ class Store:
         if run["status"] != "completed":
             raise DomainError(409, "REPORT_NOT_READY", "仅流程完成后提供报告。")
         evidence = self.page("evidence", run_id, 0, 100)["items"]
+        winner = next((h for h in run["hypotheses"] if h["status"] == "supported"), None)
+        located = run["stop_reason"] == "evidence_sufficient" and winner is not None
+        legacy = run["model"] == "FakeLLM-v1"
         return {
             "run_id": run_id,
-            "conclusion": "unresolved",
-            "component": "",
-            "fault_type": "",
-            "summary": "模拟流程已完成。当前证据不能用于真实根因判断。",
-            "evidence_ids": [e["evidence_id"] for e in evidence],
-            "alternatives": [h["fault_type"] for h in run["hypotheses"]],
-            "limitations": ["FakeLLM 与探测结果均为合成数据。", "竞争假设与成本策略尚未实现。"],
+            "conclusion": "located" if located else "unresolved",
+            "component": winner["component"] if located and winner else "",
+            "fault_type": winner["fault_type"] if located and winner else "",
+            "summary": "候选满足两类观测通道支持与分差条件。"
+            if located and winner
+            else "证据不足以唯一定位；保留竞争解释。",
+            "evidence_ids": winner["evidence_ids"]
+            if located and winner
+            else [e["evidence_id"] for e in evidence],
+            "alternatives": [
+                h["fault_type"] for h in run["hypotheses"] if not located or h != winner
+            ],
+            "limitations": (
+                ["历史合成快照，不支持真实诊断。"]
+                if legacy
+                else [
+                    "仅针对冻结观测，支持分数不是概率；相关观测不证明因果。",
+                    "候选集可能遗漏真实原因；本地受控环境不能代表生产系统。",
+                ]
+            )
+            + (
+                ["使用规则 FakeLLM，结果仅验证程序行为。"]
+                if run["model"].startswith("Fake")
+                else []
+            ),
             "stop_reason": run["stop_reason"],
             "usage": run["usage"],
         }
+
+    def frozen(self, run_id: str) -> Json:
+        with self.connection() as db:
+            row = db.execute("SELECT body FROM run_context WHERE run_id=?", (run_id,)).fetchone()
+        if not row:
+            return {"mode": "fake", "snapshot": None, "seed": 42}
+        return json.loads(row[0])  # type: ignore[no-any-return]
+
+    def budget(self) -> Json:
+        with self.connection() as db:
+            sums = dict(
+                db.execute("SELECT state,SUM(amount) FROM charges GROUP BY state").fetchall()
+            )
+        cap = min(450000000, self.config.probeops_spend_cap_micro_cny)
+        return {
+            "currency": "CNY",
+            "cap_micro_cny": 500000000,
+            "admission_cap_micro_cny": cap,
+            **{f"{s}_micro_cny": sums.get(s, 0) for s in ("settled", "reserved", "uncertain")},
+            "available_micro_cny": max(0, cap - sum(sums.values())),
+        }
+
+    def reserve(self, run_id: str, owner: str, amount: int) -> str:
+        if amount < 0:
+            raise ValueError("Invalid reservation")
+        with self.transaction() as db:
+            run = self._get(db, run_id)
+            row = db.execute("SELECT owner,lease_until FROM runs WHERE id=?", (run_id,)).fetchone()
+            if run["status"] != "running" or row[0] != owner or row[1] < time.time():
+                raise DomainError(409, "RUN_STOPPED", "运行已停止或租约失效。")
+            usage = run["usage"]
+            if usage["llm_calls"] >= run["limits"]["max_llm_calls"]:
+                raise DomainError(409, "CALL_LIMIT", "达到模型尝试上限。")
+            total = db.execute("SELECT COALESCE(SUM(amount),0) FROM charges").fetchone()[0]
+            used = sum(usage[f"{s}_micro_cny"] for s in ("settled", "reserved", "uncertain"))
+            if (
+                total + amount > min(450000000, self.config.probeops_spend_cap_micro_cny)
+                or used + amount > run["limits"]["max_cost_micro_cny"]
+            ):
+                raise DomainError(409, "BUDGET_EXHAUSTED", "剩余预算不足以预留本次请求。")
+            charge_id = uid("charge")
+            db.execute(
+                "INSERT INTO charges(id,run_id,state,amount) VALUES(?,?,'reserved',?)",
+                (charge_id, run_id, amount),
+            )
+            db.execute(
+                "INSERT INTO charge_events(charge_id,state,amount,timestamp) "
+                "VALUES(?,'reserved',?,?)",
+                (charge_id, amount, now()),
+            )
+            usage["llm_calls"] += 1
+            usage["reserved_micro_cny"] += amount
+            self._event(db, run, "warning", "模型调用已预留费用并计入尝试上限。")
+            return charge_id
+
+    def settle(
+        self, charge_id: str, amount: int | None, input_tokens: int = 0, output_tokens: int = 0
+    ) -> None:
+        with self.transaction() as db:
+            charge = db.execute("SELECT * FROM charges WHERE id=?", (charge_id,)).fetchone()
+            if not charge or charge["state"] != "reserved":
+                return
+            run = self._get(db, charge["run_id"])
+            state, final = (
+                ("uncertain", charge["amount"]) if amount is None else ("settled", amount)
+            )
+            if final < 0:
+                raise ValueError("Invalid settlement")
+            db.execute(
+                "UPDATE charges SET state=?,amount=?,input_tokens=?,output_tokens=? WHERE id=?",
+                (state, final, input_tokens, output_tokens, charge_id),
+            )
+            db.execute(
+                "INSERT INTO charge_events(charge_id,state,amount,timestamp) VALUES(?,?,?,?)",
+                (charge_id, state, final, now()),
+            )
+            usage = run["usage"]
+            usage["reserved_micro_cny"] -= charge["amount"]
+            usage[f"{state}_micro_cny"] += final
+            usage["input_tokens"] += input_tokens
+            usage["output_tokens"] += output_tokens
+            self._event(
+                db,
+                run,
+                "llm_finished",
+                "模型请求费用已结算。" if amount is not None else "请求计费未知，保留最坏费用。",
+            )
+
+    def _uncertain(self, db: sqlite3.Connection, run: Json) -> None:
+        for row in db.execute(
+            "SELECT id,amount FROM charges WHERE run_id=? AND state='reserved'", (run["run_id"],)
+        ).fetchall():
+            db.execute("UPDATE charges SET state='uncertain' WHERE id=?", (row["id"],))
+            db.execute(
+                "INSERT INTO charge_events(charge_id,state,amount,timestamp) "
+                "VALUES(?,'uncertain',?,?)",
+                (row["id"], row["amount"], now()),
+            )
+            run["usage"]["reserved_micro_cny"] -= row["amount"]
+            run["usage"]["uncertain_micro_cny"] += row["amount"]
+
+    def reconcile(self, charge_id: str, actual: int, bill_reference: str) -> None:
+        if actual < 0 or not bill_reference or len(bill_reference) > 120:
+            raise ValueError("Invalid reconciliation")
+        with self.transaction() as db:
+            row = db.execute("SELECT * FROM charges WHERE id=?", (charge_id,)).fetchone()
+            if not row or row["state"] != "uncertain":
+                raise DomainError(409, "CHARGE_NOT_UNCERTAIN", "仅未确认费用允许对账。")
+            run = self._get(db, row["run_id"])
+            db.execute(
+                "UPDATE charges SET state='settled',amount=? WHERE id=?", (actual, charge_id)
+            )
+            # Keep reference hash only. Never overwrite reservation/uncertainty history.
+            state = "reconciled:" + hashlib.sha256(bill_reference.encode()).hexdigest()
+            db.execute(
+                "INSERT INTO charge_events(charge_id,state,amount,timestamp) VALUES(?,?,?,?)",
+                (charge_id, state, actual, now()),
+            )
+            run["usage"]["uncertain_micro_cny"] -= row["amount"]
+            run["usage"]["settled_micro_cny"] += actual
+            self._event(db, run, "warning", "依据账单完成费用对账；原始流水保留。")

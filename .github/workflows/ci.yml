@@ -1,4 +1,4 @@
-name: P1 checks
+name: ProbeOps checks
 on: [push, pull_request]
 permissions:
   contents: read
@@ -14,8 +14,8 @@ jobs:
       - run: uv sync --frozen
       - run: uv run pytest -q
       - run: uv run mypy
-      - run: uv run ruff check backend scripts
-      - run: uv run ruff format --check backend scripts
+      - run: uv run ruff check backend scripts lab evaluation
+      - run: uv run ruff format --check backend scripts lab evaluation
   frontend:
     runs-on: ubuntu-latest
     defaults:

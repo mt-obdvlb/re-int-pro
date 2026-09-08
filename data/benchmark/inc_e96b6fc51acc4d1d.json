@@ -1,0 +1,1306 @@
+{
+  "incident": {
+    "incident_id": "inc_e96b6fc51acc4d1d",
+    "title": "结算服务异常检查",
+    "alert": "检查本次结算窗口的响应、任务处理与配置是否异常。",
+    "service": "checkout-api",
+    "window_start": "2026-09-08T00:05:09.785467Z",
+    "window_end": "2026-09-08T00:05:13.005347Z",
+    "dataset_version": "lab-v1"
+  },
+  "graph": {
+    "checkout-api": [
+      "cache",
+      "database",
+      "task-worker"
+    ],
+    "task-worker": [
+      "database"
+    ]
+  },
+  "metrics": {
+    "checkout-api": {
+      "latency_ms": [
+        256.777,
+        254.98,
+        263.678,
+        263.993,
+        270.371,
+        269.565,
+        258.89,
+        257.369,
+        260.579,
+        262.802,
+        267.255,
+        266.741,
+        255.662,
+        255.335,
+        264.42,
+        267.378,
+        268.385,
+        266.824,
+        257.288,
+        259.825,
+        261.436,
+        263.506,
+        266.042,
+        266.151,
+        258.264,
+        256.555,
+        264.325,
+        262.408,
+        268.853,
+        264.913,
+        259.218,
+        257.953,
+        261.263,
+        260.929,
+        264.995,
+        264.646,
+        255.763,
+        255.894,
+        260.989,
+        263.21,
+        265.473,
+        267.584,
+        255.607,
+        255.674,
+        258.375,
+        260.016,
+        263.543,
+        263.243
+      ]
+    },
+    "database": {
+      "pool_wait_ms": [
+        0.096,
+        0.05,
+        4.444,
+        4.836,
+        11.772,
+        13.642,
+        0.056,
+        0.02,
+        5.356,
+        5.094,
+        8.798,
+        11.284,
+        0.091,
+        0.018,
+        5.464,
+        5.58,
+        11.162,
+        10.613,
+        0.02,
+        0.113,
+        5.117,
+        5.175,
+        10.469,
+        8.547,
+        0.038,
+        0.015,
+        5.997,
+        5.856,
+        11.301,
+        11.463,
+        0.06,
+        0.016,
+        3.857,
+        4.77,
+        7.229,
+        7.304,
+        0.044,
+        0.011,
+        5.849,
+        6.086,
+        10.315,
+        10.38,
+        0.018,
+        0.007,
+        2.469,
+        2.158,
+        8.046,
+        8.069
+      ]
+    },
+    "cache": {
+      "latency_ms": [
+        247.144,
+        247.495,
+        247.564,
+        247.887,
+        249.981,
+        248.977,
+        250.01,
+        248.946,
+        246.909,
+        248.456,
+        249.885,
+        246.429,
+        247.489,
+        247.513,
+        250.617,
+        253.557,
+        250.113,
+        249.552,
+        249.536,
+        251.711,
+        248.857,
+        251.135,
+        248.279,
+        250.418,
+        249.882,
+        248.332,
+        251.179,
+        249.028,
+        252.119,
+        248.234,
+        251.357,
+        250.309,
+        250.165,
+        248.007,
+        250.687,
+        250.484,
+        247.304,
+        247.46,
+        248.938,
+        251.221,
+        250.049,
+        252.111,
+        248.681,
+        248.722,
+        248.744,
+        250.474,
+        249.952,
+        249.593
+      ]
+    },
+    "task-worker": {
+      "queue_depth": [
+        1,
+        1,
+        3,
+        3,
+        4,
+        4,
+        1,
+        1,
+        3,
+        3,
+        4,
+        4,
+        1,
+        1,
+        3,
+        3,
+        4,
+        4,
+        1,
+        1,
+        3,
+        3,
+        4,
+        4,
+        1,
+        1,
+        3,
+        3,
+        4,
+        4,
+        1,
+        1,
+        3,
+        2,
+        4,
+        4,
+        1,
+        1,
+        3,
+        3,
+        4,
+        4,
+        1,
+        1,
+        3,
+        3,
+        4,
+        4
+      ]
+    }
+  },
+  "logs": {
+    "checkout-api": [],
+    "database": [],
+    "cache": [
+      {
+        "event_type": "cache_slow",
+        "trace_id": "3729f8732ba44b34ba07e54dd51d8bf6"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "99bfecd211a94985b3684e4a308a7d5a"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "93592722f3c84e16aef594053556a896"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "dd59f6accfe44fa296b81e913c73fd29"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "63574dc734b244979e18ba3db44a3341"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "1f494c18506b4bbe82051b54bfc5db61"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "5d8f8b6a68b94ad3af0e0e51c0d08531"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "72834b72a4a846d59d371ead2221f646"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "c857ba557ff3476fb8daadd2e3d125ee"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "61f7e690fb0d452f8de1dc6ee797fb34"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "62c69637ab4247e8903d44c2d54e5dc4"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "898027ac7cb64708a7d4ea26a8761b03"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "f98b5204d4c04b0bb658c4b72094cf69"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "5763f63837534f6181c40580c1e81f49"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "75f7634e871145db8755523071660347"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "822146b1cbb94a3fb2bcdbe5555129b0"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "7ecc3da8b3f24ef3a7fab1c45399a985"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "cfec7bf12bf2469fb224e85ead2198b8"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "e4b3785f3e384174b4c90b8415d7398e"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "4c581b49280a4ec093923e0daac56fa4"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "65ee3df36406480c83f3d809aaf1cbc1"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "41bd0ee17faf40faaa87b2c9ba6b1316"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "1bcd82a2da924904bb886b1744e9d2b1"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "96ef81dd26484c218051a9b4b81414c3"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "73bbfa3ad94c426f9cee2e53a0078bd1"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "2302e0122600471ebf8da302caea6fe7"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "390dff44a8874145ad6db474c5e58997"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "260fb41dc12e450d8d7840a6bd772de3"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "85e298789b64492b93db4acab917554a"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "9ba6bbf32be8486e9a9e483732e9e386"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "2681e7fdcee240e59a5f2f04589cfc2b"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "fcddf4c993fe46a999b9c9c90a5fdf53"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "2c73123dd36c426d8d9c2271a8edf93c"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "ba99f57e73f24855a0e64baf6e9501d9"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "260935d189674e7bbfe65389348e4995"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "2f41066cfb6f4e36bc31381388cfe0a2"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "45bdd1bfdf2542caa228aaf25ce3f346"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "d75eef7db5a54f6eb7d5b373b10fa3f8"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "71b32df3d50949959b2f3d9374dbecd1"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "8871738aed1d4319a1e9217db1a5a119"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "99cbf7a6066f4c599655b6c7043e6ef2"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "1644f1880b5e48b9b72d8ddc8b92e63f"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "1a3a454705d84cc4825c12533370320f"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "ee92a3788bbf48fa9d8a99ea5c641368"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "14532f1a065c4c3da5d3dd32b7b955a3"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "d9c3348914ec47fcb07dc051526b8144"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "6d89137d09c14ba6ba49cf4b9c6c23bb"
+      },
+      {
+        "event_type": "cache_slow",
+        "trace_id": "22d65695547c4ca9b06c141becd1f1ab"
+      }
+    ],
+    "task-worker": []
+  },
+  "traces": [
+    {
+      "trace_id": "3729f8732ba44b34ba07e54dd51d8bf6",
+      "duration_ms": 256.777,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 247.144
+        },
+        {
+          "service": "database",
+          "duration_ms": 6.906
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "99bfecd211a94985b3684e4a308a7d5a",
+      "duration_ms": 254.98,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 247.495
+        },
+        {
+          "service": "database",
+          "duration_ms": 5.104
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "93592722f3c84e16aef594053556a896",
+      "duration_ms": 263.678,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 247.564
+        },
+        {
+          "service": "database",
+          "duration_ms": 12.715
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "dd59f6accfe44fa296b81e913c73fd29",
+      "duration_ms": 263.993,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 247.887
+        },
+        {
+          "service": "database",
+          "duration_ms": 13.402
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "63574dc734b244979e18ba3db44a3341",
+      "duration_ms": 270.371,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 249.981
+        },
+        {
+          "service": "database",
+          "duration_ms": 18.659
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "1f494c18506b4bbe82051b54bfc5db61",
+      "duration_ms": 269.565,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 248.977
+        },
+        {
+          "service": "database",
+          "duration_ms": 19.205
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "5d8f8b6a68b94ad3af0e0e51c0d08531",
+      "duration_ms": 258.89,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 250.01
+        },
+        {
+          "service": "database",
+          "duration_ms": 6.455
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "72834b72a4a846d59d371ead2221f646",
+      "duration_ms": 257.369,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 248.946
+        },
+        {
+          "service": "database",
+          "duration_ms": 5.948
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "c857ba557ff3476fb8daadd2e3d125ee",
+      "duration_ms": 260.579,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 246.909
+        },
+        {
+          "service": "database",
+          "duration_ms": 12.03
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "61f7e690fb0d452f8de1dc6ee797fb34",
+      "duration_ms": 262.802,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 248.456
+        },
+        {
+          "service": "database",
+          "duration_ms": 12.334
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "62c69637ab4247e8903d44c2d54e5dc4",
+      "duration_ms": 267.255,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 249.885
+        },
+        {
+          "service": "database",
+          "duration_ms": 15.689
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "898027ac7cb64708a7d4ea26a8761b03",
+      "duration_ms": 266.741,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 246.429
+        },
+        {
+          "service": "database",
+          "duration_ms": 18.51
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "f98b5204d4c04b0bb658c4b72094cf69",
+      "duration_ms": 255.662,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 247.489
+        },
+        {
+          "service": "database",
+          "duration_ms": 5.774
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "5763f63837534f6181c40580c1e81f49",
+      "duration_ms": 255.335,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 247.513
+        },
+        {
+          "service": "database",
+          "duration_ms": 5.836
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "75f7634e871145db8755523071660347",
+      "duration_ms": 264.42,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 250.617
+        },
+        {
+          "service": "database",
+          "duration_ms": 11.193
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "822146b1cbb94a3fb2bcdbe5555129b0",
+      "duration_ms": 267.378,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 253.557
+        },
+        {
+          "service": "database",
+          "duration_ms": 11.374
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "7ecc3da8b3f24ef3a7fab1c45399a985",
+      "duration_ms": 268.385,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 250.113
+        },
+        {
+          "service": "database",
+          "duration_ms": 16.958
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "cfec7bf12bf2469fb224e85ead2198b8",
+      "duration_ms": 266.824,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 249.552
+        },
+        {
+          "service": "database",
+          "duration_ms": 15.849
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "e4b3785f3e384174b4c90b8415d7398e",
+      "duration_ms": 257.288,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 249.536
+        },
+        {
+          "service": "database",
+          "duration_ms": 5.416
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "4c581b49280a4ec093923e0daac56fa4",
+      "duration_ms": 259.825,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 251.711
+        },
+        {
+          "service": "database",
+          "duration_ms": 6.061
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "65ee3df36406480c83f3d809aaf1cbc1",
+      "duration_ms": 261.436,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 248.857
+        },
+        {
+          "service": "database",
+          "duration_ms": 10.516
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "41bd0ee17faf40faaa87b2c9ba6b1316",
+      "duration_ms": 263.506,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 251.135
+        },
+        {
+          "service": "database",
+          "duration_ms": 10.464
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "1bcd82a2da924904bb886b1744e9d2b1",
+      "duration_ms": 266.042,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 248.279
+        },
+        {
+          "service": "database",
+          "duration_ms": 15.453
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "96ef81dd26484c218051a9b4b81414c3",
+      "duration_ms": 266.151,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 250.418
+        },
+        {
+          "service": "database",
+          "duration_ms": 13.555
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "73bbfa3ad94c426f9cee2e53a0078bd1",
+      "duration_ms": 258.264,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 249.882
+        },
+        {
+          "service": "database",
+          "duration_ms": 5.726
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "2302e0122600471ebf8da302caea6fe7",
+      "duration_ms": 256.555,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 248.332
+        },
+        {
+          "service": "database",
+          "duration_ms": 5.755
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "390dff44a8874145ad6db474c5e58997",
+      "duration_ms": 264.325,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 251.179
+        },
+        {
+          "service": "database",
+          "duration_ms": 11.308
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "260fb41dc12e450d8d7840a6bd772de3",
+      "duration_ms": 262.408,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 249.028
+        },
+        {
+          "service": "database",
+          "duration_ms": 11.222
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "85e298789b64492b93db4acab917554a",
+      "duration_ms": 268.853,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 252.119
+        },
+        {
+          "service": "database",
+          "duration_ms": 15.557
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "9ba6bbf32be8486e9a9e483732e9e386",
+      "duration_ms": 264.913,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 248.234
+        },
+        {
+          "service": "database",
+          "duration_ms": 15.625
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "2681e7fdcee240e59a5f2f04589cfc2b",
+      "duration_ms": 259.218,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 251.357
+        },
+        {
+          "service": "database",
+          "duration_ms": 5.199
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "fcddf4c993fe46a999b9c9c90a5fdf53",
+      "duration_ms": 257.953,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 250.309
+        },
+        {
+          "service": "database",
+          "duration_ms": 5.424
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "2c73123dd36c426d8d9c2271a8edf93c",
+      "duration_ms": 261.263,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 250.165
+        },
+        {
+          "service": "database",
+          "duration_ms": 9.264
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "ba99f57e73f24855a0e64baf6e9501d9",
+      "duration_ms": 260.929,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 248.007
+        },
+        {
+          "service": "database",
+          "duration_ms": 10.711
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "260935d189674e7bbfe65389348e4995",
+      "duration_ms": 264.995,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 250.687
+        },
+        {
+          "service": "database",
+          "duration_ms": 12.63
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "2f41066cfb6f4e36bc31381388cfe0a2",
+      "duration_ms": 264.646,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 250.484
+        },
+        {
+          "service": "database",
+          "duration_ms": 12.364
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "45bdd1bfdf2542caa228aaf25ce3f346",
+      "duration_ms": 255.763,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 247.304
+        },
+        {
+          "service": "database",
+          "duration_ms": 6.174
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "d75eef7db5a54f6eb7d5b373b10fa3f8",
+      "duration_ms": 255.894,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 247.46
+        },
+        {
+          "service": "database",
+          "duration_ms": 5.657
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "71b32df3d50949959b2f3d9374dbecd1",
+      "duration_ms": 260.989,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 248.938
+        },
+        {
+          "service": "database",
+          "duration_ms": 10.319
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "8871738aed1d4319a1e9217db1a5a119",
+      "duration_ms": 263.21,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 251.221
+        },
+        {
+          "service": "database",
+          "duration_ms": 10.381
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "99cbf7a6066f4c599655b6c7043e6ef2",
+      "duration_ms": 265.473,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 250.049
+        },
+        {
+          "service": "database",
+          "duration_ms": 14.457
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "1644f1880b5e48b9b72d8ddc8b92e63f",
+      "duration_ms": 267.584,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 252.111
+        },
+        {
+          "service": "database",
+          "duration_ms": 14.391
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "1a3a454705d84cc4825c12533370320f",
+      "duration_ms": 255.607,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 248.681
+        },
+        {
+          "service": "database",
+          "duration_ms": 4.401
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "ee92a3788bbf48fa9d8a99ea5c641368",
+      "duration_ms": 255.674,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 248.722
+        },
+        {
+          "service": "database",
+          "duration_ms": 4.388
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "14532f1a065c4c3da5d3dd32b7b955a3",
+      "duration_ms": 258.375,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 248.744
+        },
+        {
+          "service": "database",
+          "duration_ms": 8.462
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "d9c3348914ec47fcb07dc051526b8144",
+      "duration_ms": 260.016,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 250.474
+        },
+        {
+          "service": "database",
+          "duration_ms": 8.101
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "6d89137d09c14ba6ba49cf4b9c6c23bb",
+      "duration_ms": 263.543,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 249.952
+        },
+        {
+          "service": "database",
+          "duration_ms": 12.402
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    },
+    {
+      "trace_id": "22d65695547c4ca9b06c141becd1f1ab",
+      "duration_ms": 263.243,
+      "spans": [
+        {
+          "service": "cache",
+          "duration_ms": 249.593
+        },
+        {
+          "service": "database",
+          "duration_ms": 12.448
+        },
+        {
+          "service": "task-worker",
+          "duration_ms": 0
+        }
+      ]
+    }
+  ],
+  "config": {
+    "checkout-api": {
+      "request_timeout_ms": 1000
+    }
+  },
+  "provenance": {
+    "kind": "captured-local-services",
+    "requests": 48
+  },
+  "content_hash": "071bd1ca5173a9211cfbc0b135bf71932311fab606acd546fda23e60ae1cf5a3"
+}

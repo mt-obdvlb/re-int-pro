@@ -49,3 +49,14 @@ STRATEGY = {
     "description": "P1 FakeLLM 与一项模拟探测，不执行竞争假设算法。",
 }
 TERMINAL = {"completed", "cancelled", "failed"}
+STRATEGIES = [
+    {"strategy_id": key, "name": name, "description": description}
+    for key, name, description in [
+        ("fixed", "固定流程", "固定指标→日志→trace→配置，统一模型与验证器。"),
+        ("react", "ReAct", "模型根据已有观测选择下一项探测。"),
+        ("graph_greedy", "图贪心", "优先验证领先候选组件及其邻接依赖。"),
+        ("competitive_cost", "竞争假设与成本", "按候选对区分度 D/(c+0.1) 选择探测。"),
+        ("no_cost", "去成本消融", "仅按区分度 D 排序，字典序破同分。"),
+        ("random_probe", "随机探测消融", "保存种子，均匀选择合法未执行探测。"),
+    ]
+]

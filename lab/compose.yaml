@@ -1,0 +1,33 @@
+name: probeops-lab
+services:
+  database:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: probeops
+      POSTGRES_PASSWORD: local-lab-only
+      POSTGRES_DB: probeops_lab
+    ports: ["127.0.0.1:15432:5432"]
+    tmpfs: ["/var/lib/postgresql/data"]
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U probeops -d probeops_lab"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+  cache:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports: ["127.0.0.1:16379:6379"]
+    mem_limit: 128m
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+  jaeger:
+    image: jaegertracing/all-in-one:1.76.0
+    profiles: ["tracing"]
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports: ["127.0.0.1:16686:16686", "127.0.0.1:4318:4318"]
+    mem_limit: 256m

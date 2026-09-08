@@ -125,7 +125,7 @@ class LocalSpanExporter(SpanExporter):
 
 
 class Telemetry:
-    def __init__(self, directory: Path, role: str, level: str = "INFO"):
+    def __init__(self, directory: Path, role: str, level: str = "INFO", otlp_endpoint: str = ""):
         directory.mkdir(parents=True, exist_ok=True)
         self.provider = TracerProvider(
             resource=Resource.create({"service.name": f"probeops-{role}"})
@@ -139,6 +139,16 @@ class Telemetry:
                 schedule_delay_millis=200,
             )
         )
+        if otlp_endpoint:
+            from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+
+            self.provider.add_span_processor(
+                BatchSpanProcessor(
+                    OTLPSpanExporter(endpoint=otlp_endpoint, timeout=2),
+                    max_queue_size=2048,
+                    max_export_batch_size=128,
+                )
+            )
         self.tracer = self.provider.get_tracer("probeops")
         self.queue: queue.Queue[logging.LogRecord] = queue.Queue(maxsize=2048)
         self.handler = SafeQueueHandler(self.queue)

@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CaretRight, Copy, FileText, Prohibit } from '@phosphor-icons/react'
-import { api, terminal } from './api'
+import { api, terminal, money, faultNames } from './api'
 import { ErrorNotice, Status } from './Status'
 
 export function RunDetail({ id }: { id: string }) {
-  const [tab, setTab] = useState<'events' | 'evidence' | 'report'>('events')
+  const [tab, setTab] = useState<'hypotheses' | 'events' | 'evidence' | 'report'>('hypotheses')
   const [copied, setCopied] = useState('')
   const client = useQueryClient()
   const run = useQuery({
@@ -82,6 +82,7 @@ export function RunDetail({ id }: { id: string }) {
       <div className="tabs" aria-label="运行详情视图">
         {(
           [
+            ['hypotheses', '竞争假设'],
             ['events', '过程'],
             ['evidence', '证据'],
             ['report', '报告'],
@@ -100,6 +101,65 @@ export function RunDetail({ id }: { id: string }) {
           </button>
         ))}
       </div>
+      {tab === 'hypotheses' && (
+        <div className="hypotheses">
+          <p className="muted">支持 +1、反驳 −2。两类观测通道支持且领先至少 2 分，才允许定位。</p>
+          {!current.hypotheses.length && (
+            <p role="status">{active ? '正在生成可证伪的候选解释…' : '本次运行未生成有效候选。'}</p>
+          )}
+          {current.hypotheses.map((h) => (
+            <article key={h.hypothesis_id} className="hypothesis-row">
+              <div className="section-heading">
+                <div>
+                  <h3>{faultNames[h.fault_type] ?? h.fault_type}</h3>
+                  <code>{h.component}</code>
+                </div>
+                <div className="hypothesis-score">
+                  <strong>
+                    {h.score > 0 ? '+' : ''}
+                    {h.score}
+                  </strong>
+                  <span>
+                    {
+                      {
+                        active: '待验证',
+                        supported: '满足定位条件',
+                        contradicted: '存在反驳',
+                        unresolved: '未确定',
+                      }[h.status]
+                    }
+                  </span>
+                </div>
+              </div>
+              <details>
+                <summary>预测与证据 · {h.evidence_ids.length} 项引用</summary>
+                <ul className="prediction-list">
+                  {h.predictions.map((p) => (
+                    <li key={`${p.tool_name}-${p.observation}`}>
+                      <code>{p.observation}</code>
+                      <span>
+                        {
+                          {
+                            high: '偏高 / 存在',
+                            normal: '正常 / 不存在',
+                            low: '偏低',
+                            unknown: '无法预测',
+                          }[p.expected]
+                        }
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                {h.evidence_ids.length > 0 && (
+                  <button className="text-button" onClick={() => setTab('evidence')}>
+                    查看观测证据
+                  </button>
+                )}
+              </details>
+            </article>
+          ))}
+        </div>
+      )}
       {tab === 'events' && (
         <>
           {events.error && (
@@ -138,6 +198,36 @@ export function RunDetail({ id }: { id: string }) {
                       </button>
                     )}
                   </div>
+                  {event.decision && (
+                    <div className="decision-detail">
+                      <p>{event.decision.reason}</p>
+                      <dl>
+                        <dt>探测</dt>
+                        <dd>
+                          <code>{event.decision.probe_id}</code>
+                        </dd>
+                        <dt>可区分候选对</dt>
+                        <dd>{event.decision.disagreement_pairs}</dd>
+                        <dt>估算成本单位</dt>
+                        <dd>{event.decision.estimated_cost_units.toFixed(3)}</dd>
+                        <dt>效用 D/(c+0.1)</dt>
+                        <dd>{event.decision.utility.toFixed(3)}</dd>
+                      </dl>
+                    </div>
+                  )}
+                  {event.hypotheses && (
+                    <ul className="prediction-list">
+                      {event.hypotheses.map((h) => (
+                        <li key={h.hypothesis_id}>
+                          <span>{faultNames[h.fault_type] ?? h.fault_type}</span>
+                          <span>
+                            {h.score > 0 ? '+' : ''}
+                            {h.score} · {h.status}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </details>
               </li>
             ))}
@@ -170,7 +260,9 @@ export function RunDetail({ id }: { id: string }) {
             <article className="evidence-item" key={item.evidence_id}>
               <div className="section-heading">
                 <code>{item.tool_name}</code>
-                <span className="badge">模拟观测</span>
+                <span className="badge">
+                  {item.source.startsWith('synthetic:') ? '模拟观测' : '冻结快照'} · {item.outcome}
+                </span>
               </div>
               <p>{item.summary}</p>
               <dl className="evidence-meta">
@@ -208,9 +300,21 @@ export function RunDetail({ id }: { id: string }) {
             <p role="status">正在读取报告…</p>
           ) : (
             <article className="report">
-              <span className="badge">模拟流程</span>
-              <h3>无法确定根因</h3>
+              <span className="badge">{current.model}</span>
+              <h3>
+                {report.data.conclusion === 'located'
+                  ? `${report.data.component} · ${faultNames[report.data.fault_type] ?? report.data.fault_type}`
+                  : '无法确定根因'}
+              </h3>
               <p>{report.data.summary}</p>
+              <p className="muted">
+                停止原因：{current.stop_reason} · {report.data.evidence_ids.length} 项证据引用
+              </p>
+              {report.data.alternatives.length > 0 && (
+                <p>
+                  其他解释：{report.data.alternatives.map((a) => faultNames[a] ?? a).join('、')}
+                </p>
+              )}
               <ul>
                 {report.data.limitations.map((item) => (
                   <li key={item}>{item}</li>
@@ -218,13 +322,16 @@ export function RunDetail({ id }: { id: string }) {
               </ul>
               <div className="report-facts">
                 <span>
-                  模拟调用 <strong>{current.usage.llm_calls}</strong> 次
+                  模型调用 <strong>{current.usage.llm_calls}</strong> 次
                 </span>
                 <span>
                   探测 <strong>{current.usage.probe_count}</strong> 次
                 </span>
                 <span>
-                  模型费用 <strong>¥0.00</strong>
+                  已结算 <strong>{money(current.usage.settled_micro_cny)}</strong>
+                </span>
+                <span>
+                  未确认 <strong>{money(current.usage.uncertain_micro_cny)}</strong>
                 </span>
               </div>
             </article>

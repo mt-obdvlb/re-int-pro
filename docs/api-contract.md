@@ -1,6 +1,6 @@
 # API 契约与 Apifox 维护
 
-接口字段的机器可读定义见 [openapi.json](api/openapi.json)：OpenAPI 3.0.3，11 条路径、12 个操作、19 个数据模型。P1 已实现这些路由的 FakeLLM 基础行为，策略仅 fixed 可用；真实机制与费用账本待 P3。本文描述全项目目标语义，当前验收子集见 [P1记录](p1-validation.md)。
+接口字段的机器可读定义见 [openapi.json](api/openapi.json)：OpenAPI 3.0.3，11 条路径、12 个操作、19 个数据模型。完整版本已实现六策略和持久化费用账本。health增加可选llm_mode/model，hypotheses_updated事件增加可选hypotheses历史。当前验收见 [完整记录](full-validation.md)。
 
 ## 接口清单
 
@@ -11,7 +11,7 @@
 | GET /api/v1/incidents/{incident_id} | 200 Incident | 告警、服务、窗口、数据版本；未知 ID 404 |
 | GET /api/v1/strategies | 200 StrategyList | 六种冻结策略及说明 |
 | POST /api/v1/runs | 202 Run | 必填 Idempotency-Key；incident、strategy、limits；准入后排队 |
-| GET /api/v1/runs | 200 RunPage | limit 默认20最大100，按 created_at+run_id 降序的 opaque cursor |
+| GET /api/v1/runs | 200 RunPage | limit 默认20最大100，按内部ordinal降序的数字字符串cursor |
 | GET /api/v1/runs/{run_id} | 200 Run | 状态、假设、usage、最后事件序号 |
 | POST /api/v1/runs/{run_id}/cancel | 202 Run | 原因长度1–200；重复/终态取消返回实际状态，不重启任务 |
 | GET /api/v1/runs/{run_id}/events | 200 EventPage | after_seq 默认0、limit默认50最大100；增量查询 |
@@ -21,11 +21,11 @@
 
 所有路径参数为最多64字符的字母、数字、下划线、连字符；时间 RFC3339 UTC，金额 micro_cny 非负整数；拒绝未声明正文属性。缺少或不合法字段统一422，不能泄漏 Pydantic 原始 input。正常错误结构为 code、message、request_id、retryable。业务状态与 HTTP 成功严格分开。
 
-固定错误码：NOT_FOUND(404)、IDEMPOTENCY_CONFLICT/REPORT_NOT_READY(409)、VALIDATION_ERROR(422)、QUEUE_FULL/BUDGET_EXHAUSTED(429)、DEPENDENCY_UNAVAILABLE(503)、INTERNAL_ERROR(500)。所有响应都带 X-Request-ID，包括错误；500 文本不包含堆栈。429 的 retryable 取决于预算是否可释放，预算用尽不鼓励无限重试。
+固定错误码：INCIDENT_NOT_FOUND/RUN_NOT_FOUND(404)、IDEMPOTENCY_CONFLICT/REPORT_NOT_READY(409)、VALIDATION_ERROR(422)、QUEUE_FULL/BUDGET_EXHAUSTED(429)、DEPENDENCY_UNAVAILABLE(503)、INTERNAL_ERROR(500)。所有响应都带 X-Request-ID，包括错误；500 文本不包含堆栈。429 的 retryable 取决于预算是否可释放，预算用尽不鼓励无限重试。
 
 事件只返回 seq>after_seq，按 seq 升序；next_cursor 是本页最后序号，空页保持原输入，has_more 表示当次快照仍有剩余。证据页使用单独内部序号，不与 event seq 混用；目前不对外返回 raw 文件路径。运行列表 cursor 解析失败422；分页期间新增运行不要求出现在旧页链中。
 
-创建队列事务和实际模型预算预留分开：创建时预算不足则429；排队后预算被其他任务耗尽，可以 completed/unresolved + cost_limit，没有调用不得记作模型错误。Report 位于已完成的 immutable run 下；unresolved 时 component/fault_type 为空字符串，不能胡填最高分候选为答案。
+创建队列事务和模型预算预留分开：当前创建检查队列与模型配置，费用在实际调用前事务预留；预算不足时 completed/unresolved + cost_limit，不发送模型请求。Report 位于已完成的 immutable run 下；unresolved 时 component/fault_type 为空字符串，不能胡填最高分候选为答案。
 
 ## Apifox 现有配置与权威来源
 
@@ -40,7 +40,7 @@
 1. 修改契约源或 Apifox Specs 中同一文件，先核对 diff、字段 required/enum/响应码和所有 $ref；同一变更只选一个编辑入口。
 2. 提交并按授权推送；在 Apifox 同步 main，CLI list/get 验证12个操作及新增/变更 DTO。不能手工编辑被 Spec 生成的接口资源。
 3. 维护绑定真实 endpointId 的 API 测试用例；先 `cli-schema get`、`validate`，再 create/update、get 回读。同分支查询，分类 ID 来自 category。
-4. 实现 FastAPI DTO/路由；对 `/openapi.json` 做规范化差异检查：路径/方法、参数 required、类型/约束、请求体、响应码和 schema 结构必须相同。忽略 title、description、顺序与 UI 扩展；3.0/3.1 nullable 表达先语义归一，不只比较原始 JSON 文本。
+4. 实现 FastAPI DTO/路由；核对实际路由与真实响应schema/边界测试。当前/openapi.json直接提供仓库规范，因此与源JSON相等只证明规范分发，不能证明实现契约。
 5. Apifox 测试指向本地隔离后端，报告写临时目录，不上传密钥/原始日志。复核报告后保存脱敏用例映射与结果摘要。
 
 命令与 CLI 2.2.9 帮助、[官方 CLI 文档](https://docs.apifox.com/doc-5637756) 核对；升级后仍先读取对应帮助。不要把访问令牌放到命令行、Git 文件、共享环境或示例请求中。
