@@ -6,13 +6,15 @@ import time
 from .models import DomainError
 from .observations import PROBES, Band, Gateway, Json
 from .provider import propose
-from .reasoning import hypotheses, select, update
+from .reasoning import falsifiable_probes, hypotheses, select, update
 from .storage import Store
 
 
 async def diagnose_snapshot(store: Store, run: Json, owner: str, delay: float = 0) -> None:
     rid = run["run_id"]
     frozen = store.frozen(rid)
+    require_complete = frozen.get("policy_version") in {"competitive-v4", "competitive-v5"}
+    allow_falsification = frozen.get("policy_version") == "competitive-v5"
     snapshot = frozen["snapshot"]
     gateway = Gateway(snapshot)
     deadline = time.monotonic() + run["limits"]["max_wall_seconds"]
@@ -65,13 +67,17 @@ async def diagnose_snapshot(store: Store, run: Json, owner: str, delay: float = 
                     proposal.next_probe,
                     frozen.get("costs"),
                     observations=observed,
-                    verification=frozen.get("policy_version") == "competitive-v3",
+                    verification=frozen.get("policy_version")
+                    in {"competitive-v3", "competitive-v4", "competitive-v5"},
+                    require_complete=require_complete,
+                    allow_falsification=allow_falsification,
                 )
                 active = [h for h in hs if h["status"] != "contradicted"]
                 if (
                     run["strategy_id"] in {"competitive_cost", "no_cost"}
                     and len(active) > 1
                     and decision["disagreement_pairs"] == 0
+                    and not (allow_falsification and falsifiable_probes(hs, remaining))
                 ):
                     break
                 pid = decision["probe_id"]
@@ -110,7 +116,7 @@ async def diagnose_snapshot(store: Store, run: Json, owner: str, delay: float = 
                     return
                 remaining.remove(pid)
                 observed.append((evidence, band))
-                hs = update(hs, observed)
+                hs = update(hs, observed, require_complete=require_complete)
                 store.advance(
                     rid,
                     owner,
@@ -129,7 +135,11 @@ async def diagnose_snapshot(store: Store, run: Json, owner: str, delay: float = 
                     proposal = await propose(
                         store, rid, owner, await model_context(), remaining, deadline
                     )
-                    hs = update(hypotheses(proposal, replacements), observed)
+                    hs = update(
+                        hypotheses(proposal, replacements),
+                        observed,
+                        require_complete=require_complete,
+                    )
                     store.advance(
                         rid,
                         owner,
@@ -137,12 +147,15 @@ async def diagnose_snapshot(store: Store, run: Json, owner: str, delay: float = 
                         "replacement：原候选均有反驳，仅允许重建一次。",
                         updates={"hypotheses": hs},
                     )
+                    if require_complete and any(h["status"] == "supported" for h in hs):
+                        stop = "evidence_sufficient"
+                        break
         else:
             stop = "step_limit"
         if run["strategy_id"] == "fixed" and stop != "deadline":
             # Same model and schema, after the fixed observations; cannot override evidence checks.
             proposal = await propose(store, rid, owner, await model_context(), remaining, deadline)
-            hs = update(hypotheses(proposal, 1), observed)
+            hs = update(hypotheses(proposal, 1), observed, require_complete=require_complete)
             stop = "evidence_sufficient" if any(h["status"] == "supported" for h in hs) else stop
             store.advance(
                 rid,

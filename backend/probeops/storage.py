@@ -13,6 +13,7 @@ from typing import Any
 from .config import Settings
 from .models import INCIDENT, TERMINAL, CreateRun, DomainError
 from .observations import PROBES, SnapshotCatalog
+from .prompts import PROMPT_VERSION
 from .reasoning import POLICY_VERSION
 from .telemetry import Telemetry, now, remote_context, span_id
 
@@ -139,7 +140,7 @@ class Store:
             frozen = {
                 "mode": mode,
                 "policy_version": POLICY_VERSION,
-                "prompt_version": "proposal-v2",
+                "prompt_version": PROMPT_VERSION,
                 "seed": seed,
                 "model": self.config.bailian_model if mode == "bailian" else "FakeLLM-v2",
                 "snapshot": None if demo else self.catalog.load(body.incident_id),

@@ -11,7 +11,7 @@ from .models import StrictModel
 from .observations import GRAPH, PROBE_MAP, PROBES, Band, Json
 
 Fault = Literal["pool_exhaustion", "queue_backlog", "cache_latency", "config_error", "unknown"]
-POLICY_VERSION = "competitive-v3"
+POLICY_VERSION = "competitive-v5"
 
 
 class Prediction(StrictModel):
@@ -80,6 +80,13 @@ def expected(h: Json, probe_id: str) -> str:
     )
 
 
+def falsifiable_probes(hs: list[Json], remaining: list[str]) -> dict[str, int]:
+    """Known predictions can be refuted even when other candidates say unknown."""
+    active = [h for h in hs if h["status"] != "contradicted"]
+    counts = {pid: sum(expected(h, pid) != "unknown" for h in active) for pid in remaining}
+    return {pid: n for pid, n in counts.items() if 0 < n < len(active)}
+
+
 def select(
     strategy: str,
     hs: list[Json],
@@ -91,6 +98,8 @@ def select(
     observations: list[tuple[Json, Band]] | None = None,
     verification: bool = True,
     smoothing: float = 0.1,
+    require_complete: bool = False,
+    allow_falsification: bool = False,
 ) -> Json:
     if not math.isfinite(smoothing) or smoothing < 0:
         raise ValueError("Invalid cost smoothing")
@@ -114,6 +123,14 @@ def select(
     # Once discrimination is complete, seek a missing abnormal evidence channel.
     # This changes acquisition order only: update() still requires actual evidence.
     confirm = []
+    closing = False
+    fallback = {}
+    if (
+        allow_falsification
+        and strategy in {"competitive_cost", "no_cost"}
+        and not any(p["disagreement_pairs"] for p in scored)
+    ):
+        fallback = falsifiable_probes(hs, remaining)
     if verification and strategy in {"competitive_cost", "no_cost"} and len(active) == 1:
         candidate = active[0]
         supported_tools = {
@@ -130,11 +147,23 @@ def select(
                 if expected(candidate, p["probe_id"]) in {"high", "low"}
                 and PROBE_MAP[p["probe_id"]].tool_name not in supported_tools
             ]
+        if not confirm and require_complete:
+            confirm = [p for p in scored if expected(candidate, p["probe_id"]) != "unknown"]
+            closing = bool(confirm)
     if confirm:
         pick = min(
             confirm,
             key=lambda p: (
                 p["estimated_cost_units"] if strategy == "competitive_cost" else 0,
+                p["probe_id"],
+            ),
+        )
+    elif fallback:
+        pick = min(
+            [p for p in scored if p["probe_id"] in fallback],
+            key=lambda p: (
+                -fallback[p["probe_id"]]
+                / (costs[p["probe_id"]] + smoothing if strategy == "competitive_cost" else 1),
                 p["probe_id"],
             ),
         )
@@ -169,30 +198,40 @@ def select(
         pick = min(scored, key=lambda p: (-p["disagreement_pairs"], p["probe_id"]))
     else:
         pick = min(scored, key=lambda p: (-p["utility"], p["estimated_cost_units"], p["probe_id"]))
+    detail = "未知预测不参与区分。"
+    if confirm:
+        detail = (
+            "完整预测核对：检查剩余明确预测，缺失不算验证通过。"
+            if closing
+            else "验证剩余候选：尝试补足异常证据通道，仍须通过实际观测校验。"
+        )
+    elif fallback:
+        count = fallback[pick["probe_id"]]
+        denominator = costs[pick["probe_id"]] + smoothing if strategy == "competitive_cost" else 1
+        detail = f"unknown补查：K={count}，检验分数={count / denominator:.3f}；未知预测仍不评分。"
     return {
         **pick,
         "reason": (
             f"{strategy}: D={pick['disagreement_pairs']}, "
-            f"c={pick['estimated_cost_units']:.3f}; "
-            + (
-                "验证剩余候选：尝试补足异常证据通道，仍须通过实际观测校验。"
-                if confirm
-                else "未知预测不参与区分。"
-            )
+            f"c={pick['estimated_cost_units']:.3f}; {detail}"
         ),
     }
 
 
-def update(hs: list[Json], observations: list[tuple[Json, Band]]) -> list[Json]:
+def update(
+    hs: list[Json], observations: list[tuple[Json, Band]], *, require_complete: bool = False
+) -> list[Json]:
     # Recompute from immutable observations; distinct tools need not be independent.
     for h in hs:
         score, support, refute, abnormal = 0, set(), False, False
         refs = []
+        compared = set()
         for evidence, band in observations:
             prediction = expected(h, evidence["probe_id"])
             if "unknown" in (band, prediction) or evidence["outcome"] != "ok":
                 continue
             refs.append(evidence["evidence_id"])
+            compared.add(evidence["probe_id"])
             if prediction == band:
                 score += 1
                 # Normal observations alone never establish a fault.
@@ -208,12 +247,16 @@ def update(hs: list[Json], observations: list[tuple[Json, Band]]) -> list[Json]:
             status="contradicted" if refute else "active",
         )
         h["_support"] = len(support) if abnormal else 0
+        h["_complete"] = not require_complete or all(
+            p["expected"] == "unknown" or p["observation"] in compared for p in h["predictions"]
+        )
     ranked = sorted(hs, key=lambda h: h["score"], reverse=True)
     if ranked:
         first = ranked[0]
         margin = first["score"] - (ranked[1]["score"] if len(ranked) > 1 else 0)
         if (
             first["_support"] >= 2
+            and first["_complete"]
             and margin >= 2
             and first["status"] != "contradicted"
             and first["fault_type"] != "unknown"
@@ -221,6 +264,7 @@ def update(hs: list[Json], observations: list[tuple[Json, Band]]) -> list[Json]:
             first["status"] = "supported"
     for h in hs:
         h.pop("_support", None)
+        h.pop("_complete", None)
     return hs
 
 

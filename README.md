@@ -6,7 +6,7 @@
 
 **工程可运行不等于面试已准备好。** 复试按老师看简历提问、无法展示项目的场景准备；当前Agent价值、成本项效果与个人掌握仍需检验，见 [面试准备差距](docs/interview-readiness.md)。
 
-2026-09-09补强：新增剩余候选验证探测、独立规则基线、共享真实候选的排序消融与失败审计。同为13/16定位结果时，新选择平均探测5.0→3.2；规则基线16/16更好，且模型仍有漏查反驳，不能声称LLM优于规则或模型费下降。结果和离线复算见 [机制补强](docs/strengthening-results.md)。
+2026-09-09当前机制为 **competitive-v5 / proposal-v3**：补充静态服务语义，定位前核对候选全部明确预测，并在unknown导致零分歧时补查可被反驳的预测。共享新候选的20个开发任务中，完整核对＋补查定位12/16个已知故障，已定位案例没有遗漏明确预测；规则仍16/16。剩余4个队列故障预测错误，尚未证明LLM优势或费用下降。结果和复算见 [可靠性补强](docs/reliability-results.md)。
 
 ## 启动
 
@@ -44,7 +44,7 @@ uv run --no-editable python scripts/trace.py <trace_id>
 
 2026-09-08：后端29项测试、前端交互测试、类型检查、lint与构建通过；60测试快照×6策略×3次共1,080次 FakeLLM 管线运行，无系统失败。百炼20个开发任务中，16个已知故障定位正确13个，4个正常/缺失观测任务未误报。集成用量估算累计 **0.065529元**，尚未与供应商账单核对。
 
-2026-09-09额外完成20个开发任务的候选采集（旧策略完整运行14/16），以及不再调用模型的共享候选消融。新批次估算 **0.061880元**，账本累计 **0.127409元**，预留与未确认费用均0；操作限额仍1元。完整运行与只保留初始候选的回放结果不能直接混比。
+2026-09-09先完成旧策略候选采集与排序消融，再完成新提示候选采集、两份候选×三种核对方式×20任务的120次离线回放，以及一次v5百炼联调。当前后端 **59项测试**、类型与lint检查通过；账本累计估算 **0.192655元**，预留与未确认费用均0，操作限额仍1元。完整运行包含候选重建，不能与初始候选回放直接混比；单次联调不计入效果成绩。
 
 **百炼六策略正式配对实验尚未执行，不能声称竞争成本策略优于基线。** 开发/测试使用同一生成器、不同种子和严重程度区间，不能称跨模板或生产泛化。详见 [完整验收](docs/full-validation.md)。
 
@@ -65,7 +65,8 @@ pnpm --dir frontend generate:api
 - [模块交付](docs/module-delivery.md)、[项目记录](docs/project-plan.md)、[实施计划](docs/implementation-plan.md)：已按用户指令连续实现，不再逐个 P 阶段批准。
 - [需求](docs/requirements.md)、[架构](docs/architecture.md)、[Agent机制](docs/agent-design.md)、[logging/tracing](docs/observability.md)、[开发配置](docs/development.md)。
 - [唯一接口契约](docs/api/openapi.json)、[API语义](docs/api-contract.md)、[Apifox](docs/apifox/README.md)、[测试](docs/testing.md)。
-- [评测与预算](docs/evaluation-plan.md)、[补强协议](docs/strengthening-protocol.md)、[补强结果与复算](docs/strengthening-results.md)、[简历与分层追问](docs/interview-guide.md)、[面试准备差距](docs/interview-readiness.md)。
+- [评测与预算](docs/evaluation-plan.md)、[可靠性协议](docs/reliability-protocol.md)、[探索性补查约定](docs/reliability-followup.md)、[当前结果与复算](docs/reliability-results.md)、[简历与分层追问](docs/interview-guide.md)、[面试准备差距](docs/interview-readiness.md)。
+- 首轮补强历史：[排序协议](docs/strengthening-protocol.md)、[v3效率与失败审计](docs/strengthening-results.md)。
 - 历史：[候选调研](docs/topic-research.md)、[选题预演稿](docs/topic-interview-scripts.md)、[研究来源](docs/topic-evidence.md)、[P1验收](docs/p1-validation.md)。
 
 提交仅含本项目源码、公共合成观测和脱敏汇总；不提交密钥、SQLite、隐藏标签或原始运行日志。历史预演稿不代表本人已完成经历。协作规范见 [AGENTS.md](AGENTS.md)。

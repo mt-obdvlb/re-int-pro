@@ -15,7 +15,7 @@ import statistics
 from pathlib import Path
 
 from probeops.observations import PROBE_MAP, Gateway, SnapshotCatalog, digest
-from probeops.reasoning import Proposal, expected, select, update
+from probeops.reasoning import Proposal, expected, falsifiable_probes, select, update
 
 VERSION = "mechanisms-v1"
 SIGNATURES = (
@@ -159,7 +159,9 @@ def rule_diagnose(snapshot, costs):
     return result(steps, costs)
 
 
-def replay(snapshot, initial, costs, variant, seed=42):
+def replay(
+    snapshot, initial, costs, variant, seed=42, *, require_complete=False, allow_falsification=False
+):
     if initial is None:
         return result([], costs, stop="missing_initial")
     strategy, verification, smoothing, uniform = VARIANTS[variant]
@@ -178,12 +180,15 @@ def replay(snapshot, initial, costs, variant, seed=42):
             observations=observed,
             verification=verification,
             smoothing=smoothing,
+            require_complete=require_complete,
+            allow_falsification=allow_falsification,
         )
         active = [h for h in hs if h["status"] != "contradicted"]
         if (
             strategy in {"competitive_cost", "no_cost"}
             and len(active) > 1
             and decision["disagreement_pairs"] == 0
+            and not (allow_falsification and falsifiable_probes(hs, remaining))
         ):
             stop = "indistinguishable"
             break
@@ -192,7 +197,7 @@ def replay(snapshot, initial, costs, variant, seed=42):
         steps.append({**decision, "band": band})
         remaining.remove(pid)
         observed.append((evidence, band))
-        hs = update(hs, observed)
+        hs = update(hs, observed, require_complete=require_complete)
         supported = next((h for h in hs if h["status"] == "supported"), None)
         if supported:
             return result(

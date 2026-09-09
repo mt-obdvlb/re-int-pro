@@ -25,3 +25,5 @@ uv run --no-editable python scripts/trace.py <trace_id>
 ```
 
 Jaeger http://127.0.0.1:16686 ，按trace ID或probeops-worker查询。测试覆盖正常、取消在途调用、金额恢复/对账、工具deadline、候选历史。没有实时metrics仪表盘、告警系统或自动7天清理；不列为完成项。验收见 [完整记录](full-validation.md)。
+
+2026-09-09回读发现本地Jaeger曾OOM退出（Docker记录OOMKilled=true、exit 137）。原256MiB容器使用默认无界内存存储，现限制最多500条trace；[1.76官方参数](https://www.jaegertracing.io/docs/1.76/deployment/cli/)与已安装镜像的`--help`均核实`--memory.max-traces`。这限制保留条数，不是严格内存上界或长期稳定性证明。Jaeger重启/淘汰会丢失其内存中的旧trace，本地JSONL与SQLite业务记录仍独立保留；不能承诺Jaeger永久保存历史。本轮运行回读见 [可靠性验证](reliability-results.md)。

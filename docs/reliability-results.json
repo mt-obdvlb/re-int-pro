@@ -1,0 +1,262 @@
+{
+  "kind": "development-prompt-by-verification-replay",
+  "model": "qwen-plus-2025-12-01",
+  "mode": "bailian",
+  "before_cache_hash": "d0b2e4acb0813b786fe401177653c61f455ebf19f8eadeebfdcb78faa7db3c71",
+  "after_cache_hash": "04470dc4c0a421f2d8b66add1c516cd119067eb22ab0285d9aa83fbb5327eae8",
+  "groups": {
+    "before_prefix": {
+      "tasks": 20,
+      "known_tasks": 16,
+      "known_correct": 13,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "mean_probes": 3.2,
+      "mean_proxy_cost": 0.32190607834490953,
+      "located_with_unchecked_predictions": 13,
+      "correct_with_unobserved_refutations": 6,
+      "candidate_coverage": 16,
+      "known_prediction_cells": 120,
+      "matching_prediction_cells": 106,
+      "missing_initial_tasks": 0
+    },
+    "before_complete": {
+      "tasks": 20,
+      "known_tasks": 16,
+      "known_correct": 7,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "mean_probes": 4.85,
+      "mean_proxy_cost": 0.4979337263538037,
+      "located_with_unchecked_predictions": 0,
+      "correct_with_unobserved_refutations": 0,
+      "candidate_coverage": 16,
+      "known_prediction_cells": 120,
+      "matching_prediction_cells": 106,
+      "missing_initial_tasks": 0
+    },
+    "before_complete_falsification": {
+      "tasks": 20,
+      "known_tasks": 16,
+      "known_correct": 7,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "mean_probes": 4.85,
+      "mean_proxy_cost": 0.4979337263538037,
+      "located_with_unchecked_predictions": 0,
+      "correct_with_unobserved_refutations": 0,
+      "candidate_coverage": 16,
+      "known_prediction_cells": 120,
+      "matching_prediction_cells": 106,
+      "missing_initial_tasks": 0
+    },
+    "after_prefix": {
+      "tasks": 20,
+      "known_tasks": 16,
+      "known_correct": 5,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "mean_probes": 1.85,
+      "mean_proxy_cost": 0.1901567363506183,
+      "located_with_unchecked_predictions": 5,
+      "correct_with_unobserved_refutations": 2,
+      "candidate_coverage": 16,
+      "known_prediction_cells": 73,
+      "matching_prediction_cells": 69,
+      "missing_initial_tasks": 0
+    },
+    "after_complete": {
+      "tasks": 20,
+      "known_tasks": 16,
+      "known_correct": 3,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "mean_probes": 2.1,
+      "mean_proxy_cost": 0.2216026567888912,
+      "located_with_unchecked_predictions": 0,
+      "correct_with_unobserved_refutations": 0,
+      "candidate_coverage": 16,
+      "known_prediction_cells": 73,
+      "matching_prediction_cells": 69,
+      "missing_initial_tasks": 0
+    },
+    "after_complete_falsification": {
+      "tasks": 20,
+      "known_tasks": 16,
+      "known_correct": 12,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "mean_probes": 4.5,
+      "mean_proxy_cost": 0.4750622725626454,
+      "located_with_unchecked_predictions": 0,
+      "correct_with_unobserved_refutations": 0,
+      "candidate_coverage": 16,
+      "known_prediction_cells": 73,
+      "matching_prediction_cells": 69,
+      "missing_initial_tasks": 0
+    }
+  },
+  "within_cache_paired": {
+    "before_complete_minus_prefix": {
+      "accuracy": {
+        "tasks": 16,
+        "difference": -0.375,
+        "ci95": [
+          -0.625,
+          -0.125
+        ]
+      },
+      "common_success_extra_probes": {
+        "tasks": 7,
+        "difference": 3.857142857142857,
+        "ci95": [
+          2.2857142857142856,
+          5.714285714285714
+        ]
+      }
+    },
+    "before_complete_falsification_minus_complete": {
+      "accuracy": {
+        "tasks": 16,
+        "difference": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "common_success_extra_probes": {
+        "tasks": 7,
+        "difference": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      }
+    },
+    "after_complete_minus_prefix": {
+      "accuracy": {
+        "tasks": 16,
+        "difference": -0.125,
+        "ci95": [
+          -0.3125,
+          0
+        ]
+      },
+      "common_success_extra_probes": {
+        "tasks": 3,
+        "difference": 1,
+        "ci95": [
+          1,
+          1
+        ]
+      }
+    },
+    "after_complete_falsification_minus_complete": {
+      "accuracy": {
+        "tasks": 16,
+        "difference": 0.5625,
+        "ci95": [
+          0.3125,
+          0.8125
+        ]
+      },
+      "common_success_extra_probes": {
+        "tasks": 3,
+        "difference": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      }
+    }
+  },
+  "new_api_cost_micro_cny": 0,
+  "after_source_full_runs_cost_micro_cny": 62811,
+  "after_source_full_runs_uncertain_micro_cny": 0,
+  "source_hashes": {
+    "evaluation/reliability.py": "4ecfd4d05678165cb2789510346c1220a25faf7378a5c0b9ded90fd48fb4e1af",
+    "evaluation/mechanisms.py": "ff50cfb4e306ea3e4c2fb05d4fd474b9e8a949fae18103a00fd95a75f3fa934a",
+    "backend/probeops/reasoning.py": "f54612e69d4b27248b7ccfbb14b3e719f593da46bed83057d80472485213cc24",
+    "backend/probeops/prompts.py": "5c898e9af10213a5981e58cbc30960fd36f584868ebe6cd16d16bf1a8cc2a266",
+    "backend/probeops/engine.py": "a215015b1467297614ee46d4a26ad1e5068a04d1e08c891023c17d1278c25479",
+    "docs/reliability-protocol.md": "4ea452d6be401ed71680097ddc790f8535cb7967c0d60044049e035d28e18e69",
+    "docs/reliability-followup.md": "22b3a9db9d32112aaf3a3cfe01d18a2d271b096172d813892885321668bed58a"
+  },
+  "limits": [
+    "Development only; one generated matrix per task per prompt",
+    "Across-prompt changes include sampling variation",
+    "Full checks establish prediction consistency, not causal correctness",
+    "Unknown predictions are excluded; report coverage alongside consistency"
+  ],
+  "source_full_runs": {
+    "policy_version": "competitive-v4",
+    "prompt_version": "proposal-v3",
+    "tasks": 20,
+    "known_correct": 5,
+    "known_tasks": 16,
+    "negative_false_locations": 0,
+    "system_failures": 0,
+    "llm_calls": 24,
+    "input_tokens": 34629,
+    "output_tokens": 17550,
+    "stop_reasons": {
+      "ambiguous": 15,
+      "evidence_sufficient": 5
+    }
+  },
+  "v5_live_smoke": {
+    "run_id": "run_b4f6c0847a1b4f4e",
+    "config_hash": "a8475ce9fa29fe64060db74d199506c6e72160ca892b4a3f783dd780c26d335e",
+    "snapshot_hash": "e897ac1ad647782791dc740b1273d610dfb489789367a970052ccfa4517ccb93",
+    "status": "completed",
+    "stop_reason": "evidence_sufficient",
+    "correct": true,
+    "usage": {
+      "llm_calls": 1,
+      "probe_count": 7,
+      "input_tokens": 1216,
+      "output_tokens": 731,
+      "settled_micro_cny": 2435,
+      "reserved_micro_cny": 0,
+      "uncertain_micro_cny": 0,
+      "probe_cost_units": 0.7311580812674947
+    },
+    "purpose": "First development task, integration only, excluded from replay scores"
+  },
+  "ledger_2026_09_09_micro_cny": {
+    "settled": 192655,
+    "reserved": 0,
+    "uncertain": 0,
+    "operator_cap": 1000000
+  },
+  "candidate_file_sha256": "0a52c14a8dfb57ddee0ce97ee3dc2999ce7a3bb8aa5a8c7630073e6d74044319",
+  "previous_stage_commit": "0bde31d6b0186d10414ca538c479599e0cd2b725",
+  "runtime_verification": {
+    "run_id": "run_1c0fb4a9855547e6",
+    "mode": "fake",
+    "policy": "competitive-v5",
+    "prompt": "proposal-v3",
+    "status": "completed",
+    "conclusion": "located",
+    "probe_count": 8,
+    "explicit_predictions_checked": 8,
+    "new_api_cost_micro_cny": 0,
+    "trace_id": "962e7a4208859fca34255493bc463e7a",
+    "jaeger_spans": 57,
+    "operations": [
+      "agent.select_probe",
+      "agent.step",
+      "diagnosis.run",
+      "llm.request",
+      "run.accept",
+      "storage.commit",
+      "tool.query_logs",
+      "tool.query_metrics",
+      "tool.read_config",
+      "worker.claim"
+    ],
+    "paid_v5_smoke_has_fallback_and_closing": true,
+    "jaeger_max_traces": 500,
+    "jaeger_config_sha256": "6fb8d8950afd894e4e520d20ee2a7b3b037fcef56605b24e3d3a3e8db75c871c"
+  }
+}
