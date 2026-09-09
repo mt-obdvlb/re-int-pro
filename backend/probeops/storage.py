@@ -13,6 +13,7 @@ from typing import Any
 from .config import Settings
 from .models import INCIDENT, TERMINAL, CreateRun, DomainError
 from .observations import PROBES, SnapshotCatalog
+from .reasoning import POLICY_VERSION
 from .telemetry import Telemetry, now, remote_context, span_id
 
 Json = dict[str, Any]
@@ -137,7 +138,7 @@ class Store:
                 raise DomainError(503, "PROVIDER_UNAVAILABLE", "百炼服务端密钥尚未配置。")
             frozen = {
                 "mode": mode,
-                "policy_version": "competitive-v2",
+                "policy_version": POLICY_VERSION,
                 "prompt_version": "proposal-v2",
                 "seed": seed,
                 "model": self.config.bailian_model if mode == "bailian" else "FakeLLM-v2",

@@ -1,0 +1,479 @@
+{
+  "version": "mechanisms-v1",
+  "kind": "development-initial-proposal-replay",
+  "model": "qwen-plus-2025-12-01",
+  "mode": "bailian",
+  "candidate_cache_hash": "d0b2e4acb0813b786fe401177653c61f455ebf19f8eadeebfdcb78faa7db3c71",
+  "source_batch_hash": "c7aad8c65ab43d50e87cedf3972441d2189f87c53425e9a734dce0ac1256d3db",
+  "manifest_hash": "49f0172ce08b65418f4c5fddf5236cc4a27601d8911131116a1dfe41b9527401",
+  "source_hashes": {
+    "evaluation/mechanisms.py": "33420e912b25564e1f50efb46bc29b592bf88ea357d180da380a94709f4e3977",
+    "backend/probeops/reasoning.py": "39049c6dfa0679a95f9ba617c9d967b16f723b92069429cdb5c268b7598f4df3",
+    "backend/probeops/observations.py": "eac180304c117afe16c96d9a700f34b821b3bc2fe07352d00e6b0dd45f530e62",
+    "docs/strengthening-protocol.md": "f33d395022f8fd6cae0a2a1e4849c1e87345fab713d926cfd3966a936ede680a"
+  },
+  "new_api_cost_micro_cny": 0,
+  "source_full_runs_cost_micro_cny": 61880,
+  "source_full_runs_uncertain_micro_cny": 0,
+  "cost_audit": {
+    "minimum": 0.1,
+    "maximum": 0.12578368175309151,
+    "at_original_floor": 7,
+    "denominator_ratio_at_epsilon_01": 1.1289184087654576,
+    "sufficient_threshold_for_dominant_disagreement": 1.2,
+    "cost_can_only_break_disagreement_ties": true,
+    "original_ms_and_bytes_components_saved": false
+  },
+  "limits": [
+    "initial candidates only; no adaptive proposals",
+    "development tasks; not held-out estimates",
+    "proxy cost is not LLM fee or online latency",
+    "domain rules have hand-authored signatures",
+    "matching predictions and tool diversity do not prove causality"
+  ],
+  "scored": true,
+  "tasks": 20,
+  "known_tasks": 16,
+  "negative_tasks": 4,
+  "variants": {
+    "legacy_cost": {
+      "known_correct": 13,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "correct_with_unobserved_refutations": 6,
+      "mean_probes": 5,
+      "mean_proxy_cost": 0.5019060783449095
+    },
+    "verification_cost": {
+      "known_correct": 13,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "correct_with_unobserved_refutations": 6,
+      "mean_probes": 3.2,
+      "mean_proxy_cost": 0.3219060783449095
+    },
+    "verification_no_cost": {
+      "known_correct": 11,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "correct_with_unobserved_refutations": 4,
+      "mean_probes": 3.2,
+      "mean_proxy_cost": 0.3375645732844714
+    },
+    "legacy_no_cost": {
+      "known_correct": 11,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "correct_with_unobserved_refutations": 4,
+      "mean_probes": 4.6,
+      "mean_proxy_cost": 0.4893627498438582
+    },
+    "fixed_order": {
+      "known_correct": 11,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "correct_with_unobserved_refutations": 4,
+      "mean_probes": 4,
+      "mean_proxy_cost": 0.4316964788886253
+    },
+    "random_order": {
+      "known_correct": 8,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "correct_with_unobserved_refutations": 1,
+      "mean_probes": 3.3,
+      "mean_proxy_cost": 0.3611580812674947
+    },
+    "epsilon_0": {
+      "known_correct": 13,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "correct_with_unobserved_refutations": 6,
+      "mean_probes": 3.2,
+      "mean_proxy_cost": 0.3219060783449095
+    },
+    "epsilon_001": {
+      "known_correct": 13,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "correct_with_unobserved_refutations": 6,
+      "mean_probes": 3.2,
+      "mean_proxy_cost": 0.3219060783449095
+    },
+    "epsilon_1": {
+      "known_correct": 13,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "correct_with_unobserved_refutations": 6,
+      "mean_probes": 3.2,
+      "mean_proxy_cost": 0.3219060783449095
+    },
+    "uniform_cost": {
+      "known_correct": 11,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "correct_with_unobserved_refutations": 4,
+      "mean_probes": 3.2,
+      "mean_proxy_cost": 0.3375645732844714
+    },
+    "rules": {
+      "known_correct": 16,
+      "known_false_locations": 0,
+      "negative_false_locations": 0,
+      "correct_with_unobserved_refutations": null,
+      "mean_probes": 4.8,
+      "mean_proxy_cost": 0.4892847949243151
+    }
+  },
+  "paired": {
+    "legacy_cost": {
+      "accuracy": {
+        "tasks": 16,
+        "difference": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "common_success_probes": {
+        "tasks": 13,
+        "difference": -2.230769230769231,
+        "ci95": [
+          -2.8461538461538463,
+          -1.5384615384615385
+        ]
+      },
+      "common_success_proxy_cost": {
+        "tasks": 13,
+        "difference": -0.2230769230769231,
+        "ci95": [
+          -0.28461538461538466,
+          -0.15384615384615385
+        ]
+      },
+      "common_consistent_success_probes": {
+        "tasks": 7,
+        "difference": -2.142857142857143,
+        "ci95": [
+          -3.142857142857143,
+          -1
+        ]
+      },
+      "changed_sequences": 14
+    },
+    "verification_no_cost": {
+      "accuracy": {
+        "tasks": 16,
+        "difference": 0.125,
+        "ci95": [
+          0,
+          0.3125
+        ]
+      },
+      "common_success_probes": {
+        "tasks": 11,
+        "difference": 0.09090909090909091,
+        "ci95": [
+          -0.9090909090909091,
+          1.0909090909090908
+        ]
+      },
+      "common_success_proxy_cost": {
+        "tasks": 11,
+        "difference": 4.951434252277832e-05,
+        "ci95": [
+          -0.1053494087780233,
+          0.10310446639460599
+        ]
+      },
+      "common_consistent_success_probes": {
+        "tasks": 7,
+        "difference": 1.2857142857142858,
+        "ci95": [
+          0.5714285714285714,
+          1.8571428571428572
+        ]
+      },
+      "changed_sequences": 20
+    },
+    "legacy_no_cost": {
+      "accuracy": {
+        "tasks": 16,
+        "difference": 0.125,
+        "ci95": [
+          0,
+          0.3125
+        ]
+      },
+      "common_success_probes": {
+        "tasks": 11,
+        "difference": -2.3636363636363638,
+        "ci95": [
+          -4.090909090909091,
+          -0.7272727272727273
+        ]
+      },
+      "common_success_proxy_cost": {
+        "tasks": 11,
+        "difference": -0.2665007707281885,
+        "ci95": [
+          -0.44127167847896503,
+          -0.10033219029428436
+        ]
+      },
+      "common_consistent_success_probes": {
+        "tasks": 7,
+        "difference": -0.2857142857142857,
+        "ci95": [
+          -1,
+          0.42857142857142855
+        ]
+      },
+      "changed_sequences": 20
+    },
+    "fixed_order": {
+      "accuracy": {
+        "tasks": 16,
+        "difference": 0.125,
+        "ci95": [
+          0,
+          0.3125
+        ]
+      },
+      "common_success_probes": {
+        "tasks": 11,
+        "difference": -2.909090909090909,
+        "ci95": [
+          -3.8181818181818183,
+          -1.9090909090909092
+        ]
+      },
+      "common_success_proxy_cost": {
+        "tasks": 11,
+        "difference": -0.32371153335340996,
+        "ci95": [
+          -0.41604258622974155,
+          -0.22144549912032244
+        ]
+      },
+      "common_consistent_success_probes": {
+        "tasks": 7,
+        "difference": -2.2857142857142856,
+        "ci95": [
+          -3.5714285714285716,
+          -1
+        ]
+      },
+      "changed_sequences": 20
+    },
+    "random_order": {
+      "accuracy": {
+        "tasks": 16,
+        "difference": 0.3125,
+        "ci95": [
+          0,
+          0.5625
+        ]
+      },
+      "common_success_probes": {
+        "tasks": 7,
+        "difference": -1.1428571428571428,
+        "ci95": [
+          -2.857142857142857,
+          0.7142857142857143
+        ]
+      },
+      "common_success_proxy_cost": {
+        "tasks": 7,
+        "difference": -0.14188288461550003,
+        "ci95": [
+          -0.31498733979117655,
+          0.0459255717328883
+        ]
+      },
+      "common_consistent_success_probes": {
+        "tasks": 7,
+        "difference": -1.1428571428571428,
+        "ci95": [
+          -2.857142857142857,
+          0.7142857142857143
+        ]
+      },
+      "changed_sequences": 20
+    },
+    "epsilon_0": {
+      "accuracy": {
+        "tasks": 16,
+        "difference": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "common_success_probes": {
+        "tasks": 13,
+        "difference": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "common_success_proxy_cost": {
+        "tasks": 13,
+        "difference": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "common_consistent_success_probes": {
+        "tasks": 7,
+        "difference": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "changed_sequences": 0
+    },
+    "epsilon_001": {
+      "accuracy": {
+        "tasks": 16,
+        "difference": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "common_success_probes": {
+        "tasks": 13,
+        "difference": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "common_success_proxy_cost": {
+        "tasks": 13,
+        "difference": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "common_consistent_success_probes": {
+        "tasks": 7,
+        "difference": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "changed_sequences": 0
+    },
+    "epsilon_1": {
+      "accuracy": {
+        "tasks": 16,
+        "difference": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "common_success_probes": {
+        "tasks": 13,
+        "difference": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "common_success_proxy_cost": {
+        "tasks": 13,
+        "difference": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "common_consistent_success_probes": {
+        "tasks": 7,
+        "difference": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "changed_sequences": 0
+    },
+    "uniform_cost": {
+      "accuracy": {
+        "tasks": 16,
+        "difference": 0.125,
+        "ci95": [
+          0,
+          0.3125
+        ]
+      },
+      "common_success_probes": {
+        "tasks": 11,
+        "difference": 0.09090909090909091,
+        "ci95": [
+          -0.9090909090909091,
+          1.0909090909090908
+        ]
+      },
+      "common_success_proxy_cost": {
+        "tasks": 11,
+        "difference": 4.951434252277832e-05,
+        "ci95": [
+          -0.1053494087780233,
+          0.10310446639460599
+        ]
+      },
+      "common_consistent_success_probes": {
+        "tasks": 7,
+        "difference": 1.2857142857142858,
+        "ci95": [
+          0.5714285714285714,
+          1.8571428571428572
+        ]
+      },
+      "changed_sequences": 20
+    }
+  },
+  "prediction_audit": {
+    "covered_known_tasks": 16,
+    "missing_initial_tasks": 0,
+    "available_cells": 160,
+    "known_prediction_cells": 120,
+    "matching_cells": 106,
+    "tasks_with_identical_candidates": 1
+  },
+  "source_full_runs": {
+    "base_commit": "cfa7912264c036aafb25e09c66830ea0b3c1f431",
+    "policy_version": "competitive-v2",
+    "prompt_version": "proposal-v2",
+    "tasks": 20,
+    "known_correct": 14,
+    "known_tasks": 16,
+    "negative_false_locations": 0,
+    "system_failures": 0,
+    "llm_calls": 25,
+    "input_tokens": 32303,
+    "output_tokens": 18013,
+    "mean_probes": 6.0,
+    "stop_reasons": {
+      "evidence_sufficient": 14,
+      "ambiguous": 6
+    }
+  },
+  "ledger_2026_09_09_micro_cny": {
+    "settled": 127409,
+    "reserved": 0,
+    "uncertain": 0,
+    "operator_cap": 1000000
+  },
+  "retrieved_2026_09_09_price_source": "https://help.aliyun.com/zh/model-studio/qwen-plus",
+  "candidate_file_sha256": "4bd76c7d66b541f5610dc836356cfd2398dff508e7e44fd5b4471e45006446f3"
+}

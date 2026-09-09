@@ -1,6 +1,7 @@
 """Validated model proposals and deterministic, inspectable policy decisions."""
 
 import itertools
+import math
 import random
 from typing import Literal
 
@@ -10,6 +11,7 @@ from .models import StrictModel
 from .observations import GRAPH, PROBE_MAP, PROBES, Band, Json
 
 Fault = Literal["pool_exhaustion", "queue_backlog", "cache_latency", "config_error", "unknown"]
+POLICY_VERSION = "competitive-v3"
 
 
 class Prediction(StrictModel):
@@ -85,7 +87,13 @@ def select(
     seed: int,
     model_choice: str = "",
     costs: dict[str, float] | None = None,
+    *,
+    observations: list[tuple[Json, Band]] | None = None,
+    verification: bool = True,
+    smoothing: float = 0.1,
 ) -> Json:
+    if not math.isfinite(smoothing) or smoothing < 0:
+        raise ValueError("Invalid cost smoothing")
     costs = costs or {p.probe_id: p.cost for p in PROBES}
     active = [h for h in hs if h["status"] != "contradicted"]
     scored: list[Json] = []
@@ -100,10 +108,37 @@ def select(
                 "probe_id": pid,
                 "disagreement_pairs": pairs,
                 "estimated_cost_units": costs[pid],
-                "utility": pairs / (costs[pid] + 0.1),
+                "utility": pairs / (costs[pid] + smoothing),
             }
         )
-    if strategy == "random_probe":
+    # Once discrimination is complete, seek a missing abnormal evidence channel.
+    # This changes acquisition order only: update() still requires actual evidence.
+    confirm = []
+    if verification and strategy in {"competitive_cost", "no_cost"} and len(active) == 1:
+        candidate = active[0]
+        supported_tools = {
+            e["tool_name"]
+            for e, band in observations or []
+            if e["outcome"] == "ok"
+            and band in {"high", "low"}
+            and expected(candidate, e["probe_id"]) == band
+        }
+        if candidate["fault_type"] != "unknown" and len(supported_tools) < 2:
+            confirm = [
+                p
+                for p in scored
+                if expected(candidate, p["probe_id"]) in {"high", "low"}
+                and PROBE_MAP[p["probe_id"]].tool_name not in supported_tools
+            ]
+    if confirm:
+        pick = min(
+            confirm,
+            key=lambda p: (
+                p["estimated_cost_units"] if strategy == "competitive_cost" else 0,
+                p["probe_id"],
+            ),
+        )
+    elif strategy == "random_probe":
         pick = random.Random(seed).choice(scored)
     elif strategy == "react":
         pick = next((p for p in scored if p["probe_id"] == model_choice), scored[0])
@@ -138,13 +173,18 @@ def select(
         **pick,
         "reason": (
             f"{strategy}: D={pick['disagreement_pairs']}, "
-            f"c={pick['estimated_cost_units']:.3f}; 未知预测不参与区分。"
+            f"c={pick['estimated_cost_units']:.3f}; "
+            + (
+                "验证剩余候选：尝试补足异常证据通道，仍须通过实际观测校验。"
+                if confirm
+                else "未知预测不参与区分。"
+            )
         ),
     }
 
 
 def update(hs: list[Json], observations: list[tuple[Json, Band]]) -> list[Json]:
-    # Recompute from immutable independent observations; the model never sets scores.
+    # Recompute from immutable observations; distinct tools need not be independent.
     for h in hs:
         score, support, refute, abnormal = 0, set(), False, False
         refs = []

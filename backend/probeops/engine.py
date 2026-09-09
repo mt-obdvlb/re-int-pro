@@ -64,6 +64,8 @@ async def diagnose_snapshot(store: Store, run: Json, owner: str, delay: float = 
                     frozen["seed"] + step,
                     proposal.next_probe,
                     frozen.get("costs"),
+                    observations=observed,
+                    verification=frozen.get("policy_version") == "competitive-v3",
                 )
                 active = [h for h in hs if h["status"] != "contradicted"]
                 if (
